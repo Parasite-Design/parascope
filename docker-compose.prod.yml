@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    restart: always
+    environment:
+      - ENVIRONMENT=production
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  frontend:
+    build: ./frontend
+    restart: always
+
+  traefik:
+    image: traefik:v2.10
+    command:
+      - --api.insecure=true
+      - --providers.docker
+      - --entrypoints.web.address=:80
+    ports:
+      - "80:80"
+      - "8080:8080"  # Dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  # Add production monitoring services as needed
