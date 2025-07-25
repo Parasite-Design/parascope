@@ -1,0 +1,22 @@
+repos:
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.1.13
+  hooks:
+    - id: ruff
+      args: [--fix, --show-fixes]
+      types: [python]
+      
+- repo: https://github.com/psf/black-pre-commit
+  rev: 23.10.1
+  hooks:
+    - id: black
+      args: [--line-length=120]
+      
+- repo: https://github.com/PyCQA/pylint
+  rev: v3.0.3
+  hooks:
+    - id: pylint
+      name: pylint
+      entry: pylint --rcfile=backend/.pylintrc
+      types: [python]
+      args: ["--errors-only"]

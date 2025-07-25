@@ -1,58 +1,22 @@
-version: '3.8'
-
 services:
   backend:
     build: ./backend
-    volumes:
-      - ./backend:/app
     ports:
       - "8000:8000"
     env_file:
       - .env
     depends_on:
       - mongodb
-      - redis
-
-  frontend:
-    build: ./frontend
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    env_file:
-      - .env
 
   mongodb:
     image: mongo:6.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
       - mongodb_data:/data/db
     ports:
       - "27017:27017"
-    env_file:
-      - .env
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-
-  celery:
-    build: ./backend
-    command: celery -A app.workers.celery worker --loglevel=info
-    env_file:
-      - .env
-    depends_on:
-      - redis
-      - mongodb
-
-  celery-beat:
-    build: ./backend
-    command: celery -A app.workers.celery beat --loglevel=info
-    env_file:
-      - .env
-    depends_on:
-      - redis
 
 volumes:
   mongodb_data:
