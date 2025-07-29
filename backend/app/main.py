@@ -1,12 +1,10 @@
 from fastapi import FastAPI
-from app.core.database import connect_to_mongo, close_mongo_connection
+
 from app.api.v1.router import api_router
+from app.core.database import close_mongo_connection, connect_to_mongo
 
 app = FastAPI(
-    title="Bookstore API",
-    version="1.0.0",
-    docs_url="/api/docs",
-    redoc_url="/api/redoc"
+    title="Bookstore API", version="1.0.0", docs_url="/api/docs", redoc_url="/api/redoc"
 )
 
 # Event handlers

@@ -1,29 +1,25 @@
 {
-    "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
-    "python.languageServer": "Pylance",
-    "python.analysis.typeCheckingMode": "basic",
-    "python.analysis.diagnosticSeverityOverrides": {
-        "reportUnusedImport": "error",
-        "reportUnusedVariable": "error",
-        "reportUnusedFunction": "error",
-        "reportPrivateImportUsage": "error"
-    },
-    "python.linting.enabled": true,
-    "python.linting.pylintEnabled": true,
-    "python.linting.pylintPath": "${workspaceFolder}/backend/.venv/bin/pylint",
-    "python.linting.pylintArgs": [
-        "--rcfile=${workspaceFolder}/backend/.pylintrc"
-    ],
-    "python.testing.pytestEnabled": true,
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-        "source.organizeImports": "always",
-        "source.fixAll.pylint": "always"
-    },
-    "python.analysis.extraPaths": [
-        "${workspaceFolder}/backend/app"
-    ],
-    "python.autoComplete.extraPaths": [
-        "${workspaceFolder}/backend/app"
-    ]
+  "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
+  "python.languageServer": "Pylance",
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportUnusedImport": "error",
+    "reportUnusedVariable": "error",
+    "reportUnusedFunction": "error",
+    "reportPrivateImportUsage": "error"
+  },
+  "pylint.enabled": true,
+  "pylint.path": ["${workspaceFolder}/backend/.venv/bin/pylint"],
+  "pylint.args": [
+    "--rcfile=${workspaceFolder}/backend/.pylintrc"
+  ],
+  "python.testing.pytestEnabled": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "always",
+    "source.fixAll.pylint": "always"
+  },
+  "python.analysis.extraPaths": ["${workspaceFolder}/backend/app"],
+  "python.autoComplete.extraPaths": ["${workspaceFolder}/backend/app"],
+  "codium.codeCompletion.enable": true
 }
