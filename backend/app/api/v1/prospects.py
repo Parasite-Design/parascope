@@ -12,8 +12,9 @@ from app.services.prospect import (
     get_prospect_service,
     update_prospect_service,
 )
+from app.utils.geocoding import get_lat_long_osm
 from app.utils.security import get_current_user
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
@@ -81,6 +82,33 @@ async def get_all_prospects(
     return await get_all_prospects_service(db, current_user)
 
 
+@router.post("/{prospect_id}/locate", response_model=ProspectResponse)
+async def locate_prospect(
+    prospect_id: str,
+    db: AsyncIOMotorDatabase = Depends(get_db),
+    current_user: UserResponse = Depends(get_current_user),
+):
+    """
+    Geolocate a prospect using its address, city, and country, and update its latitude and longitude.
+    """
+    # Fetch the prospect
+    prospect = await get_prospect_service(prospect_id, db, current_user)
+    try:
+        latitude, longitude = get_lat_long_osm(
+            prospect.country, prospect.city, prospect.address
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    # Prepare update data
+    update_data = ProspectUpdate(
+        latitude=latitude,
+        longitude=longitude,
+    )  # pyright: ignore[reportCallIssue]
+    updated = await update_prospect_service(prospect_id, update_data, db, current_user)
+    return updated
+
+
 @router.get("/export/csv", response_class=StreamingResponse)
 async def export_prospects_csv(
     db: AsyncIOMotorDatabase = Depends(get_db),
@@ -102,6 +130,7 @@ async def export_prospects_csv(
             "notes",
             "phone",
             "city",
+            "country",
             "address",
             "prospect_interest",
             "commercial_interest",
@@ -110,6 +139,8 @@ async def export_prospects_csv(
             "creator",
             "created_at",
             "updated_at",
+            "latitude",
+            "longitude",
         ]
     )
     # Write data rows
@@ -123,6 +154,7 @@ async def export_prospects_csv(
                 p.notes,
                 p.phone,
                 p.city,
+                p.country,
                 p.address,
                 p.prospect_interest,
                 p.commercial_interest,
@@ -131,6 +163,8 @@ async def export_prospects_csv(
                 p.creator,
                 p.created_at,
                 p.updated_at,
+                p.latitude,
+                p.longitude,
             ]
         )
     output.seek(0)

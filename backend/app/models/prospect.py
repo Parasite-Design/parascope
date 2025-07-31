@@ -23,6 +23,7 @@ class ProspectBase(BaseModel):
     notes: Optional[str] = Field("", description="Additional notes about the prospect")
     phone: str = Field(..., description="Phone number of the prospect")
     city: str = Field(..., description="City of the prospect")
+    country: str = Field(..., description="Country of the prospect")
     address: str = Field(..., description="Address of the prospect")
     prospect_interest: int = Field(
         ..., ge=0, le=5, description="Prospect's interest level (0-5)"
@@ -36,6 +37,8 @@ class ProspectBase(BaseModel):
     next_visit: Optional[datetime.datetime] = Field(
         None, description="Datetime of next visit"
     )
+    latitude: Optional[float] = Field(None, description="Latitude of the prospect")
+    longitude: Optional[float] = Field(None, description="Longitude of the prospect")
 
     @field_validator("next_visit")
     def next_visit_must_be_after_last_visit(cls, v, info: ValidationInfo):
@@ -70,6 +73,7 @@ class ProspectUpdate(BaseModel):
     )
     phone: Optional[str] = Field(None, description="Phone number of the prospect")
     city: Optional[str] = Field(None, description="City of the prospect")
+    country: Optional[str] = Field(None, description="Country of the prospect")
     address: Optional[str] = Field(None, description="Address of the prospect")
     prospect_interest: Optional[int] = Field(
         None, ge=0, le=5, description="Prospect's interest level (0-5)"
@@ -83,6 +87,8 @@ class ProspectUpdate(BaseModel):
     next_visit: Optional[datetime.datetime] = Field(
         None, description="Datetime of next visit"
     )
+    latitude: Optional[float] = Field(None, description="Latitude of the prospect")
+    longitude: Optional[float] = Field(None, description="Longitude of the prospect")
 
     @field_validator("next_visit")
     def next_visit_must_be_after_last_visit(cls, v, values):
@@ -102,6 +108,8 @@ class ProspectResponse(ProspectBase):
     creator: str = Field(..., description="MongoDB ObjectId of the creator")
     created_at: datetime.datetime = Field(..., description="Creation timestamp")
     updated_at: datetime.datetime = Field(..., description="Last update timestamp")
+    latitude: Optional[float] = Field(None, description="Latitude of the prospect")
+    longitude: Optional[float] = Field(None, description="Longitude of the prospect")
 
 
 class ProspectDelete(BaseModel):
