@@ -22,6 +22,7 @@ class ProspectBase(BaseModel):
     status: StatusEnum = Field(..., description="Status of the prospect")
     notes: Optional[str] = Field("", description="Additional notes about the prospect")
     phone: str = Field(..., description="Phone number of the prospect")
+    email: str = Field(..., description="Email address of the prospect")
     city: str = Field(..., description="City of the prospect")
     country: str = Field(..., description="Country of the prospect")
     address: str = Field(..., description="Address of the prospect")
@@ -76,6 +77,7 @@ class ProspectUpdate(BaseModel):
         None, description="Additional notes about the prospect"
     )
     phone: Optional[str] = Field(None, description="Phone number of the prospect")
+    email: Optional[str] = Field(..., description="Email address of the prospect")
     city: Optional[str] = Field(None, description="City of the prospect")
     country: Optional[str] = Field(None, description="Country of the prospect")
     address: Optional[str] = Field(None, description="Address of the prospect")
