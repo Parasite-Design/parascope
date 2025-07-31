@@ -1,5 +1,5 @@
 import datetime
-from typing import List
+from typing import List, Optional
 
 from app.models.prospect import ProspectCreate, ProspectResponse, ProspectUpdate
 from app.models.user import UserResponse
@@ -106,12 +106,15 @@ async def delete_prospect_service(
 
 
 async def get_all_prospects_service(
-    db: AsyncIOMotorDatabase, current_user: UserResponse
+    db: AsyncIOMotorDatabase, current_user: UserResponse, brand: Optional[str] = None
 ) -> List[ProspectResponse]:
-    if current_user.is_admin:
-        prospects_cursor = db.prospects.find()
-    else:
-        prospects_cursor = db.prospects.find({"rep_id": current_user.rep_id})
+    query = {}
+    if not current_user.is_admin:
+        query["rep_id"] = current_user.rep_id
+    if brand:
+        query["brands"] = brand  # Assumes brands is a list field in MongoDB
+
+    prospects_cursor = db.prospects.find(query)
     prospects = []
     async for doc in prospects_cursor:
         prospects.append(mongo_to_prospect_response(doc))

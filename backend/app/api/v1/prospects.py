@@ -1,6 +1,6 @@
 import csv
 import io
-from typing import List
+from typing import List, Optional
 
 from app.core.database import get_db
 from app.models.prospect import ProspectCreate, ProspectResponse, ProspectUpdate
@@ -14,7 +14,7 @@ from app.services.prospect import (
 )
 from app.utils.geocoding import get_lat_long_osm
 from app.utils.security import get_current_user
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
@@ -75,11 +75,12 @@ async def delete_prospect(
 async def get_all_prospects(
     db: AsyncIOMotorDatabase = Depends(get_db),
     current_user: UserResponse = Depends(get_current_user),
+    brand: Optional[str] = Query(None, description="Filter prospects by brand"),
 ):
     """
-    Retrieve all prospects.
+    Retrieve all prospects, optionally filtered by brand.
     """
-    return await get_all_prospects_service(db, current_user)
+    return await get_all_prospects_service(db, current_user, brand=brand)
 
 
 @router.post("/{prospect_id}/locate", response_model=ProspectResponse)
@@ -141,6 +142,7 @@ async def export_prospects_csv(
             "updated_at",
             "latitude",
             "longitude",
+            "brands",
         ]
     )
     # Write data rows
@@ -165,6 +167,7 @@ async def export_prospects_csv(
                 p.updated_at,
                 p.latitude,
                 p.longitude,
+                p.brands,
             ]
         )
     output.seek(0)

@@ -1,6 +1,6 @@
 import datetime
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
@@ -39,6 +39,9 @@ class ProspectBase(BaseModel):
     )
     latitude: Optional[float] = Field(None, description="Latitude of the prospect")
     longitude: Optional[float] = Field(None, description="Longitude of the prospect")
+    brands: List[str] = Field(
+        ..., description="List of brands associated with the prospect"
+    )
     favorite: Optional[bool] = Field(False)
 
     @field_validator("next_visit")
@@ -90,6 +93,9 @@ class ProspectUpdate(BaseModel):
     )
     latitude: Optional[float] = Field(None, description="Latitude of the prospect")
     longitude: Optional[float] = Field(None, description="Longitude of the prospect")
+    brands: List[str] = Field(
+        ..., description="List of brands associated with the prospect"
+    )
     favorite: Optional[bool] = Field(None)
 
     @field_validator("next_visit")
@@ -112,6 +118,9 @@ class ProspectResponse(ProspectBase):
     updated_at: datetime.datetime = Field(..., description="Last update timestamp")
     latitude: Optional[float] = Field(None, description="Latitude of the prospect")
     longitude: Optional[float] = Field(None, description="Longitude of the prospect")
+    brands: List[str] = Field(
+        ..., description="List of brands associated with the prospect"
+    )
 
 
 class ProspectDelete(BaseModel):
