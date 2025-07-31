@@ -1,11 +1,10 @@
 bakend:
-page finished: AUTH(new), PROSPECTS
-page started: ADMIN(new) , MAP
+page finished: AUTH(new), ADMIN(new)
+page started: MAP, PROSPECTS
 page TODO: CUSTOMERS, PRODUCTS, PERF
 
-ADMIN - add objective set up
 MAP - add customers geoloc
+PROSPECTS - add brand filtering
 
 Optionnels:
 Ajouter les marques par clients | map par marque et faire en sorte que chaque | marque pour les prospects
-Ajouter des listes de representant associé a chaque compte plutot qu'un seul
