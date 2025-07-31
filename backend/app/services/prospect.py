@@ -31,8 +31,8 @@ async def get_prospect_service(
     prospect = await db.prospects.find_one({"_id": obj_id})
     if not prospect:
         raise HTTPException(status_code=404, detail="Prospect not found")
-    # Authorization: Only creator can access
-    if prospect.get("rep_id") != current_user.rep_id:
+    # Authorization: Only creator or admin can access
+    if prospect.get("rep_id") != current_user.rep_id and not current_user.is_admin:
         raise HTTPException(
             status_code=403, detail="Not authorized to access this prospect"
         )
@@ -72,7 +72,7 @@ async def update_prospect_service(
     existing = await db.prospects.find_one({"_id": obj_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Prospect not found")
-    if existing.get("rep_id") != current_user.rep_id:
+    if existing.get("rep_id") != current_user.rep_id and not current_user.is_admin:
         raise HTTPException(
             status_code=403, detail="Not authorized to modify this prospect"
         )
@@ -96,7 +96,7 @@ async def delete_prospect_service(
     existing = await db.prospects.find_one({"_id": obj_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Prospect not found")
-    if existing.get("rep_id") != current_user.rep_id:
+    if existing.get("rep_id") != current_user.rep_id and not current_user.is_admin:
         raise HTTPException(
             status_code=403, detail="Not authorized to delete this prospect"
         )
@@ -108,7 +108,10 @@ async def delete_prospect_service(
 async def get_all_prospects_service(
     db: AsyncIOMotorDatabase, current_user: UserResponse
 ) -> List[ProspectResponse]:
-    prospects_cursor = db.prospects.find({"rep_id": current_user.rep_id})
+    if current_user.is_admin:
+        prospects_cursor = db.prospects.find()
+    else:
+        prospects_cursor = db.prospects.find({"rep_id": current_user.rep_id})
     prospects = []
     async for doc in prospects_cursor:
         prospects.append(mongo_to_prospect_response(doc))
