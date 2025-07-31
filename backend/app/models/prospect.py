@@ -101,11 +101,11 @@ class ProspectUpdate(BaseModel):
 class ProspectResponse(ProspectBase):
     """
     Model for returning a prospect (e.g., from DB).
-    Includes the ID, timestamps, and creator.
+    Includes the ID, timestamps, and rep_id.
     """
 
     id: str = Field(..., description="Unique identifier of the prospect")
-    creator: str = Field(..., description="MongoDB ObjectId of the creator")
+    rep_id: int = Field(..., description="Linked representative id")
     created_at: datetime.datetime = Field(..., description="Creation timestamp")
     updated_at: datetime.datetime = Field(..., description="Last update timestamp")
     latitude: Optional[float] = Field(None, description="Latitude of the prospect")

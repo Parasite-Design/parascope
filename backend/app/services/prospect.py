@@ -11,7 +11,6 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 
 def mongo_to_prospect_response(doc: dict) -> ProspectResponse:
     doc["id"] = str(doc["_id"])
-    doc["creator"] = str(doc["creator"])
     del doc["_id"]
     return ProspectResponse(**doc)
 
@@ -33,7 +32,7 @@ async def get_prospect_service(
     if not prospect:
         raise HTTPException(status_code=404, detail="Prospect not found")
     # Authorization: Only creator can access
-    if str(prospect.get("creator")) != str(current_user.id):
+    if prospect.get("rep_id") != current_user.rep_id:
         raise HTTPException(
             status_code=403, detail="Not authorized to access this prospect"
         )
@@ -44,10 +43,7 @@ async def create_prospect_service(
     prospect: ProspectCreate, db: AsyncIOMotorDatabase, current_user: UserResponse
 ) -> ProspectResponse:
     prospect_dict = prospect.model_dump()
-    try:
-        prospect_dict["creator"] = ObjectId(current_user.id)
-    except InvalidId:
-        raise HTTPException(status_code=400, detail="Invalid user ID format")
+    prospect_dict["rep_id"] = current_user.rep_id
     prospect_dict["created_at"] = datetime.datetime.now()
     prospect_dict["updated_at"] = datetime.datetime.now()
     score = calculate_score(
@@ -76,7 +72,7 @@ async def update_prospect_service(
     existing = await db.prospects.find_one({"_id": obj_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Prospect not found")
-    if str(existing.get("creator")) != str(current_user.id):
+    if existing.get("rep_id") != current_user.rep_id:
         raise HTTPException(
             status_code=403, detail="Not authorized to modify this prospect"
         )
@@ -100,7 +96,7 @@ async def delete_prospect_service(
     existing = await db.prospects.find_one({"_id": obj_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Prospect not found")
-    if str(existing.get("creator")) != str(current_user.id):
+    if existing.get("rep_id") != current_user.rep_id:
         raise HTTPException(
             status_code=403, detail="Not authorized to delete this prospect"
         )
@@ -112,7 +108,7 @@ async def delete_prospect_service(
 async def get_all_prospects_service(
     db: AsyncIOMotorDatabase, current_user: UserResponse
 ) -> List[ProspectResponse]:
-    prospects_cursor = db.prospects.find({"creator": ObjectId(current_user.id)})
+    prospects_cursor = db.prospects.find({"rep_id": current_user.rep_id})
     prospects = []
     async for doc in prospects_cursor:
         prospects.append(mongo_to_prospect_response(doc))
