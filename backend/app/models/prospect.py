@@ -39,6 +39,7 @@ class ProspectBase(BaseModel):
     )
     latitude: Optional[float] = Field(None, description="Latitude of the prospect")
     longitude: Optional[float] = Field(None, description="Longitude of the prospect")
+    favorite: Optional[bool] = Field(False)
 
     @field_validator("next_visit")
     def next_visit_must_be_after_last_visit(cls, v, info: ValidationInfo):
@@ -89,6 +90,7 @@ class ProspectUpdate(BaseModel):
     )
     latitude: Optional[float] = Field(None, description="Latitude of the prospect")
     longitude: Optional[float] = Field(None, description="Longitude of the prospect")
+    favorite: Optional[bool] = Field(None)
 
     @field_validator("next_visit")
     def next_visit_must_be_after_last_visit(cls, v, values):
