@@ -12,7 +12,7 @@ class UserBase(BaseModel):
     id: str
     email: str
     is_admin: bool = False
-    commercial_id: Optional[int] = None
+    rep_id: Optional[int] = None
     created_at: datetime
     updated_at: datetime
 
@@ -25,7 +25,7 @@ class UserCreate(BaseModel):
     email: EmailStr = Field(..., min_length=5, max_length=255)
     password: str = Field(..., min_length=8, max_length=128)
     is_admin: bool = False
-    commercial_id: Optional[int] = None
+    rep_id: Optional[int] = None
 
     @field_validator("password")
     def password_strength(cls, v: str) -> str:
@@ -52,7 +52,7 @@ class UserModify(BaseModel):
     email: Optional[EmailStr] = Field(None, min_length=5, max_length=255)
     password: Optional[str] = Field(None, min_length=8, max_length=128)
     is_admin: Optional[bool] = None
-    commercial_id: Optional[int] = None
+    rep_id: Optional[int] = None
 
 
 class UserResponse(UserBase):
@@ -82,3 +82,13 @@ class LoginRequest(BaseModel):
 
     email: Optional[EmailStr] = Field(None, min_length=5, max_length=255)
     password: Optional[str] = Field(None, min_length=8, max_length=128)
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str = Field(..., min_length=8, max_length=128)
+    new_password: str = Field(..., min_length=8, max_length=128)
+
+
+class AdminResetPasswordRequest(BaseModel):
+    user_id: str = Field(..., description="Target user's ID")
+    new_password: str = Field(..., min_length=8, max_length=128)

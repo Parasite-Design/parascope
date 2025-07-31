@@ -76,7 +76,7 @@ async def get_current_user(
         id=str(user["_id"]),
         email=user["email"],
         is_admin=user.get("is_admin", False),
-        commercial_id=user.get("commercial_id"),
+        rep_id=user.get("rep_id"),
         created_at=user.get("created_at"),
         updated_at=user.get("updated_at"),
     )
