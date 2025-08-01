@@ -1,9 +1,0 @@
-bakend:
-page finished: AUTH(new), ADMIN(new), PROSPECTS
-page started: MAP
-page TODO: CUSTOMERS, PRODUCTS, PERF
-
-MAP - add customers geoloc
-
-Optionnels:
-Ajouter les marques par clients | map par marque et faire en sorte que chaque

@@ -1,0 +1,81 @@
+bakend:
+page finished: AUTH(new), ADMIN(new), PROSPECTS
+page started: MAP
+page TODO: CUSTOMERS, PRODUCTS, PERF
+
+MAP - add customers geoloc
+
+Optionnels:
+Ajouter les marques par clients | map par marque et faire en sorte que chaque
+
+DB DESIGN:
+    invoices = {
+        _id: ObjectId,
+
+        code: str,
+        type: enum,
+        dates: {
+            BL: datetime // Index,
+            BC: datetime // Index,
+            ...
+        },
+        total: float,
+        quantity: int,
+
+        model_id: ObjectId // Index
+        product_id: ObjectId, // Index
+        customer_id: ObjectId, // Index
+        rep_id: int, // Index
+    }
+
+    customers = {
+        _id: ObjectId,
+
+        code: str,
+        name: str,
+        country: str,
+        city: str,
+        address: str,
+        phone: str,
+        email: str,
+        frame_objective: int,
+
+        visits: [Object: {
+            date: datetime,
+            quantity: int,
+            total: float,
+        }],
+        yearly_visits: int,
+        next_visit: {
+            value: datetime,
+            is_hard_coded: bool
+        }
+
+        rep_id: int // Index,
+
+        created_at: datetime,
+
+        favorite: bool
+    },
+
+    products = {
+        _id: ObjectId,
+
+        code: str,
+        name: str,
+        brand: str
+    },
+
+    models = {
+        _id: ObjectId,
+
+        code: str,
+        name: str,
+        brand: str,
+        price: float,
+        boosted: true,
+
+        product_id, // Index
+
+        created_at: datetime,
+    }
