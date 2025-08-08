@@ -1,0 +1,57 @@
+{
+  "invoices": {
+    "SQL_QUERY": "SELECT {columns} FROM dbo.F_DOCLIGNE WHERE DO_Date > ? AND cbModification >= ?",
+    "SQL_PARAMS": ["LIMIT_DATE", "LAST_UPDATE"],
+    "IDENTIFIER": "reference",
+    "PATHS": [
+        { "MongoDb": "reference", "SQL": "cbMarq"},
+        { "MongoDb": "code", "SQL": "DO_Piece" },
+        { "MongoDb": "invoice_date", "SQL": "DO_DATE" },
+        { "MongoDb": "order_date", "SQL": "DL_DateBC" },
+        { "MongoDb": "delivery_date", "SQL": "DL_DateBL" },
+        { "MongoDb": "total", "SQL": "DL_MontantHT" },
+        { "MongoDb": "quantity", "SQL": "DL_Qte" },
+        { "MongoDb": "model_id", "SQL": "AR_Ref" },
+        { "MongoDb": "product_id", "SQL": "AR_Ref" },
+        { "MongoDb": "customer_id", "SQL": "CT_NUM" },
+        { "MongoDb": "representative_id", "SQL": "CO_No" }
+    ]
+  },
+  "representatives": {
+    "SQL_QUERY": "SELECT {columns} FROM dbo.F_COLLABORATEUR WHERE cbModification >= ?",
+    "IDENTIFIER": "code",
+    "PATHS": [
+        { "MongoDb": "code", "SQL": "CO_No"},
+        { "MongoDb": "key", "SQL": "CO_Nom"},
+        { "MongoDb": "name", "SQL": "CO_Prenom"}
+    ]
+  },
+  "customers": {
+    "SQL_QUERY": "SELECT {columns} FROM dbo.F_COMPTET WHERE CT_Type = 0 AND cbModification >= ?",
+    "IDENTIFIER": "code",
+    "PATHS": [
+        { "MongoDb": "code", "SQL": "CT_NUM"},
+        { "MongoDb": "name", "SQL": "CT_Intitule" },
+        { "MongoDb": "country", "SQL": "CT_Pays" },
+        { "MongoDb": "city", "SQL": "CT_Ville" },
+        { "MongoDb": "address", "SQL": "CT_Adresse" },
+        { "MongoDb": "latitude", "SQL": "Latitude" },
+        { "MongoDb": "longitude", "SQL": "Longitude" },
+        { "MongoDb": "phone", "SQL": "CT_Telephone" },
+        { "MongoDb": "email", "SQL": "CT_EMail" },
+        { "MongoDb": "representative_id", "SQL": "CO_No" }
+    ]
+  },
+  "models": {
+    "SQL_QUERY": "SELECT {columns} FROM dbo.F_ARTICLE WHERE AR_Stat01 > '' AND AR_DateModif >= ?",
+    "IDENTIFIER": "code",
+    "PATHS": [
+        { "MongoDb": "code", "SQL": "AR_Ref" },
+        { "MongoDb": "name", "SQL": "AR_Design" },
+        { "MongoDb": "brand", "SQL": "AR_Stat01" },
+        { "MongoDb": "price", "SQL": "AR_PrixAch" },
+        { "MongoDb": "boosted", "SQL": "AR_Stat03" },
+        { "MongoDb": "product_id", "SQL": "FA_CodeFamille" }
+    ]
+  }
+}

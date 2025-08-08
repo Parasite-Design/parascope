@@ -1,0 +1,9 @@
+[
+    {"remote_collection": "products", "local_field": "product_id", "remote_field": "product_id", "target_field": "product_id", "output_collection": "models"},
+
+    {"remote_collection": "models", "local_field": "model_id", "remote_field": "code", "target_field": "model_id", "output_collection": "invoices"},
+    {"remote_collection": "representatives", "local_field": "representative_id", "remote_field": "code", "target_field": "representative_id", "output_collection": "invoices"},
+    {"remote_collection": "customers", "local_field": "customer_id", "remote_field": "code", "target_field": "customer_id", "output_collection": "invoices"},
+
+    {"remote_collection": "representatives", "local_field": "representative_id", "remote_field": "code", "target_field": "representative_id", "output_collection": "customers"}
+]

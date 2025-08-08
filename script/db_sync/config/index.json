@@ -1,0 +1,23 @@
+[
+    { "collection": "invoices", "field": "reference", "unique": 1 },
+    { "collection": "invoices", "field": "brand", "unique": 0 },
+    { "collection": "invoices", "field": "model_id", "unique": 0 },
+    { "collection": "invoices", "field": "product_id", "unique": 0 },
+    { "collection": "invoices", "field": "customer_id", "unique": 0 },
+    { "collection": "invoices", "field": "representative_id", "unique": 0 },
+    { "collection": "invoices", "field": "order_date", "unique": 0 },
+
+    { "collection": "representatives", "field": "code", "unique": 1 },
+
+    { "collection": "customers", "field": "code", "unique": 1 },
+    { "collection": "customers", "field": "representative_id", "unique": 0 },
+
+    { "collection": "models", "field": "code", "unique": 1 },
+    { "collection": "models", "field": "brand", "unique": 0 },
+    { "collection": "models", "field": "product_id", "unique": 0 },
+
+    { "collection": "products", "field": "product_id", "unique": 1 },
+    { "collection": "products", "field": "brand", "unique": 0 },
+
+    { "collection": "prospects", "field": "rep_id", "unique": 0}
+]

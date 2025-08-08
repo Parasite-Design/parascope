@@ -1,0 +1,54 @@
+[
+    {
+        "collection": "invoices",
+        "aggregation": [
+            {
+                "$lookup": {
+                    "from": "models",
+                    "localField": "model_id",
+                    "foreignField": "_id",
+                    "as": "model"
+                }
+            },
+            {
+                "$unwind": "$model"
+            },
+            {
+                "$lookup": {
+                    "from": "customers",
+                    "localField": "customer_id",
+                    "foreignField": "_id",
+                    "as": "customer"
+                }
+            },
+            {
+            "$unwind": {
+                "path": "$customer",
+                "preserveNullAndEmptyArrays": true
+            }
+            },
+            {
+                "$addFields": {
+                    "product_id": "$model.product_id",
+                    "brand": "$model.brand",
+                    "type": {
+                        "$switch": {
+                            "branches": [
+                                { "case": { "$lt": ["$quantity", 0] }, "then": "return" },
+                                { "case": { "$regexMatch": { "input": "$code", "regex": "^Z" } }, "then": "EDI" },
+                                { "case": { "$regexMatch": { "input": "$code", "regex": "^[BW]" } }, "then": "direct" }
+                            ],
+                            "default": "other"
+                        }
+                    }
+                }
+            },
+            {
+                "$unset": ["model", "customer"]
+            },
+            {
+                "$out": "invoices"
+            }
+        ]
+    }
+]

@@ -1,0 +1,28 @@
+[
+    {
+        "collection": "models",
+        "aggregation": [
+            {
+                "$group": {
+                    "_id": "$product_id",
+                    "brand": { "$first": "$brand" }
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "product_id": "$_id",
+                    "brand": 1
+                }
+            },
+            {
+                "$merge": {
+                    "into": "products",
+                    "on": "product_id",
+                    "whenMatched": "merge",
+                    "whenNotMatched": "insert"
+                }
+            }
+        ]
+    }
+]

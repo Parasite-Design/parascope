@@ -1,0 +1,25 @@
+[
+  {
+    "$lookup": {
+      "from": "{{remote_collection}}",
+      "localField": "{{local_field}}",
+      "foreignField": "{{remote_field}}",
+      "as": "linked"
+    }
+  },
+  {
+    "$set": {
+      "{{target_field}}": { "$arrayElemAt": ["$linked._id", 0] }
+    }
+  },
+  {
+    "$unset": "linked"
+  },
+  {
+    "$merge": {
+      "into": "{{output_collection}}",
+      "whenMatched": "merge",
+      "whenNotMatched": "discard"
+    }
+  }
+]

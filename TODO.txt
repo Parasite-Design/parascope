@@ -22,6 +22,7 @@ DB DESIGN:
         total: float,
         quantity: int,
 
+        brand: str // Index
         model_id: ObjectId // Index
         product_id: ObjectId, // Index
         customer_id: ObjectId, // Index
@@ -36,9 +37,12 @@ DB DESIGN:
         country: str,
         city: str,
         address: str,
+        latitude: float | None,
+        longitude: float | None,
         phone: str,
         email: str,
         frame_objective: int,
+        notes: str
 
         visits: [Object: {
             date: datetime,
@@ -55,15 +59,8 @@ DB DESIGN:
 
         created_at: datetime,
 
-        favorite: bool
-    },
-
-    products = {
-        _id: ObjectId,
-
-        code: str,
-        name: str,
-        brand: str
+        favorite: bool,
+        brand: list[str]
     },
 
     models = {
@@ -71,7 +68,7 @@ DB DESIGN:
 
         code: str,
         name: str,
-        brand: str,
+        brand: str // Index,
         price: float,
         boosted: true,
 
@@ -79,3 +76,12 @@ DB DESIGN:
 
         created_at: datetime,
     }
+
+{
+  "_id": {
+    "$oid": "689372fe54b73e426d99b378"
+  },
+  "code": 2,
+  "key": "GB",
+  "name": "Gilles Bordet"
+}
