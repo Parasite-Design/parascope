@@ -11,10 +11,10 @@ from connector import MongoDbConnector
 
 if __name__ == "__main__":
     start_date = datetime.now()
-    migrate_sql_to_mongodb()
-    cleanup(config=config.MIGRATION_CLEANUP_CONFIG)
-    index_documents()
-    link_documents()
+    # migrate_sql_to_mongodb()
+    # cleanup(config=config.MIGRATION_CLEANUP_CONFIG)
+    # index_documents()
+    # link_documents()
     cleanup(config=config.LINKING_CLEANUP_CONFIG)
     end_date = datetime.now()
 

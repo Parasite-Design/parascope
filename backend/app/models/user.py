@@ -12,7 +12,7 @@ class UserBase(BaseModel):
     id: str
     email: str
     is_admin: bool = False
-    rep_id: Optional[int] = None
+    representative_id: Optional[int] = None
     created_at: datetime
     updated_at: datetime
 
@@ -25,7 +25,7 @@ class UserCreate(BaseModel):
     email: EmailStr = Field(..., min_length=5, max_length=255)
     password: str = Field(..., min_length=8, max_length=128)
     is_admin: bool = False
-    rep_id: Optional[int] = None
+    representative_id: Optional[int] = None
 
     @field_validator("password")
     def password_strength(cls, v: str) -> str:
@@ -52,7 +52,7 @@ class UserModify(BaseModel):
     email: Optional[EmailStr] = Field(None, min_length=5, max_length=255)
     password: Optional[str] = Field(None, min_length=8, max_length=128)
     is_admin: Optional[bool] = None
-    rep_id: Optional[int] = None
+    representative_id: Optional[int] = None
 
 
 class UserResponse(UserBase):
@@ -60,7 +60,12 @@ class UserResponse(UserBase):
     User data returned in API responses (no password).
     """
 
-    pass
+    id: str
+    email: str
+    is_admin: bool = False
+    representative_id: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
 
 
 class UserToken(BaseModel):

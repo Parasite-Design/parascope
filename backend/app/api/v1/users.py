@@ -16,6 +16,7 @@ from app.services.user import (
     delete_account_service,
     get_all_users_service,
     login_user_service,
+    logout_user_service,
 )
 from app.utils.security import admin_required, get_current_user
 from bson import ObjectId
@@ -42,6 +43,21 @@ async def login_user(
 ):
     return await login_user_service(login_data.email, login_data.password, db)  # pyright: ignore[reportArgumentType]
 
+@router.post("/logout", response_model=dict, status_code=status.HTTP_200_OK)
+async def logout_user(
+    db: AsyncIOMotorDatabase = Depends(get_db),
+    current_user: UserResponse = Depends(get_current_user),
+):
+    """
+    Endpoint for users to log out (invalidate refresh token).
+    """
+    try:
+        user_object_id = ObjectId(current_user.id)
+    except (InvalidId, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid user ID"
+        )
+    return await logout_user_service(user_object_id, db)
 
 @router.get("/is-admin", response_model=dict)
 async def is_admin(

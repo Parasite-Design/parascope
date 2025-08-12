@@ -2,6 +2,8 @@ import csv
 import io
 from typing import List, Optional
 
+from bson import ObjectId
+
 from app.core.database import get_db
 from app.models.prospect import ProspectCreate, ProspectResponse, ProspectUpdate
 from app.models.user import UserResponse
@@ -12,6 +14,7 @@ from app.services.prospect import (
     get_prospect_service,
     update_prospect_service,
 )
+from app.utils.database import get_representative_code_by_mongo_id
 from app.utils.geocoding import get_lat_long_osm
 from app.utils.security import get_current_user
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -164,7 +167,7 @@ async def export_prospects_csv(
                 p.commercial_interest,
                 p.last_visit,
                 p.next_visit,
-                p.rep_id,
+                await get_representative_code_by_mongo_id(ObjectId(p.representative_id), db),
                 p.created_at,
                 p.updated_at,
                 p.latitude,

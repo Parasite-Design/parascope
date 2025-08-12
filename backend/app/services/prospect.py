@@ -11,6 +11,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 
 def mongo_to_prospect_response(doc: dict) -> ProspectResponse:
     doc["id"] = str(doc["_id"])
+    doc["representative_id"] = str(doc["representative_id"])
     del doc["_id"]
     return ProspectResponse(**doc)
 
@@ -32,7 +33,7 @@ async def get_prospect_service(
     if not prospect:
         raise HTTPException(status_code=404, detail="Prospect not found")
     # Authorization: Only creator or admin can access
-    if prospect.get("rep_id") != current_user.rep_id and not current_user.is_admin:
+    if prospect.get("representative_id") != current_user.representative_id and not current_user.is_admin:
         raise HTTPException(
             status_code=403, detail="Not authorized to access this prospect"
         )
@@ -43,7 +44,7 @@ async def create_prospect_service(
     prospect: ProspectCreate, db: AsyncIOMotorDatabase, current_user: UserResponse
 ) -> ProspectResponse:
     prospect_dict = prospect.model_dump()
-    prospect_dict["rep_id"] = current_user.rep_id
+    prospect_dict["representative_id"] = current_user.representative_id
     prospect_dict["created_at"] = datetime.datetime.now()
     prospect_dict["updated_at"] = datetime.datetime.now()
     score = calculate_score(
@@ -72,7 +73,7 @@ async def update_prospect_service(
     existing = await db.prospects.find_one({"_id": obj_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Prospect not found")
-    if existing.get("rep_id") != current_user.rep_id and not current_user.is_admin:
+    if existing.get("representative_id") != current_user.representative_id and not current_user.is_admin:
         raise HTTPException(
             status_code=403, detail="Not authorized to modify this prospect"
         )
@@ -96,7 +97,7 @@ async def delete_prospect_service(
     existing = await db.prospects.find_one({"_id": obj_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Prospect not found")
-    if existing.get("rep_id") != current_user.rep_id and not current_user.is_admin:
+    if existing.get("representative_id") != current_user.representative_id and not current_user.is_admin:
         raise HTTPException(
             status_code=403, detail="Not authorized to delete this prospect"
         )
@@ -110,7 +111,7 @@ async def get_all_prospects_service(
 ) -> List[ProspectResponse]:
     query = {}
     if not current_user.is_admin:
-        query["rep_id"] = current_user.rep_id
+        query["representative_id"] = current_user.representative_id
     if brand:
         query["brands"] = brand  # Assumes brands is a list field in MongoDB
 

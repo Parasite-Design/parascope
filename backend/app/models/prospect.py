@@ -115,7 +115,7 @@ class ProspectResponse(ProspectBase):
     """
 
     id: str = Field(..., description="Unique identifier of the prospect")
-    rep_id: int = Field(..., description="Linked representative id")
+    representative_id: str = Field(..., description="Linked representative id")
     created_at: datetime.datetime = Field(..., description="Creation timestamp")
     updated_at: datetime.datetime = Field(..., description="Last update timestamp")
     latitude: Optional[float] = Field(None, description="Latitude of the prospect")

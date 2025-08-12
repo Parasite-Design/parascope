@@ -6,6 +6,7 @@
     { "collection": "invoices", "field": "customer_id", "unique": 0 },
     { "collection": "invoices", "field": "representative_id", "unique": 0 },
     { "collection": "invoices", "field": "order_date", "unique": 0 },
+    { "collection": "invoices", "field": "type", "unique": 0 },
 
     { "collection": "representatives", "field": "code", "unique": 1 },
 

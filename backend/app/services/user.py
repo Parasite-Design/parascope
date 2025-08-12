@@ -1,6 +1,6 @@
 import secrets
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Optional
 
 from app.core.config import settings
 from app.models.user import UserCreate, UserResponse, UserToken
@@ -8,6 +8,8 @@ from app.utils.security import create_access_token, hash_password, verify_passwo
 from bson import ObjectId
 from fastapi import HTTPException, status
 from motor.motor_asyncio import AsyncIOMotorDatabase
+
+from app.utils.database import get_representative_mongo_id
 
 
 async def create_user_service(user: UserCreate, db: AsyncIOMotorDatabase) -> UserToken:
@@ -18,13 +20,20 @@ async def create_user_service(user: UserCreate, db: AsyncIOMotorDatabase) -> Use
 
     hashed_password = hash_password(user.password)
 
+    # Convert representative_id (int) to ObjectId if provided
+    representative_object_id: Optional[ObjectId] = None
+    if user.representative_id is not None:
+        representative_object_id = await get_representative_mongo_id(user.representative_id, db)
+        if representative_object_id is None:
+            raise HTTPException(status_code=404, detail="Representative not found")
+
     # Prepare user document
     now = datetime.now()
     user_doc = {
         "email": user.email,
         "password": hashed_password,
         "is_admin": user.is_admin,
-        "rep_id": user.rep_id,
+        "representative_id": representative_object_id,  # Store ObjectId or None
         "created_at": now,
         "updated_at": now,
     }
@@ -53,7 +62,7 @@ async def create_user_service(user: UserCreate, db: AsyncIOMotorDatabase) -> Use
         id=user_id,
         email=user.email,
         is_admin=user.is_admin,
-        rep_id=user.rep_id,
+        representative_id=str(representative_object_id),  # Still return the int code in response
         created_at=now,
         updated_at=now,
     )
@@ -96,7 +105,7 @@ async def login_user_service(
         id=user_id,
         email=user["email"],
         is_admin=user.get("is_admin", False),
-        rep_id=user.get("rep_id"),
+        representative_id=str(user.get("representative_id")),
         created_at=user.get("created_at"),
         updated_at=now,
     )
@@ -108,6 +117,21 @@ async def login_user_service(
         expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         user=user_response,
     )
+
+
+async def logout_user_service(user_id: ObjectId, db):
+    """
+    Invalidate the user's refresh token (logout).
+    """
+    result = await db.users.update_one(
+        {"_id": user_id},
+        {"$set": {"refresh_token": None}},
+    )
+    if result.modified_count == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    return {"message": "Logged out successfully"}
 
 
 async def change_password_service(
@@ -179,7 +203,7 @@ async def get_all_users_service(db) -> List[UserResponse]:
                 id=str(user["_id"]),
                 email=user["email"],
                 is_admin=user.get("is_admin", False),
-                rep_id=user.get("rep_id"),
+                representative_id=str(user.get("representative_id")),
                 created_at=user.get("created_at"),
                 updated_at=user.get("updated_at"),
             )
