@@ -1,13 +1,12 @@
 import asyncio
-import config
-from migrator import migrate_sql_to_mongodb
-from linker import link_documents
-from cleanup import cleanup
 from datetime import datetime
-from index import index_documents
 
+import config
+from cleanup import cleanup
 from connector import MongoDbConnector
-
+from index import index_documents
+from linker import link_documents
+from migrator import migrate_sql_to_mongodb
 
 if __name__ == "__main__":
     start_date = datetime.now()
@@ -24,7 +23,13 @@ if __name__ == "__main__":
             exit(1)
 
         async def run_migrations():
-            await mongo_connector.db["updates"].insert_one({"start_date": start_date, "end_date": end_date, "duration": (end_date - start_date).total_seconds()}) # pyright: ignore[reportOptionalSubscript]
+            await mongo_connector.db["updates"].insert_one(
+                {
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "duration": (end_date - start_date).total_seconds(),
+                }
+            )  # pyright: ignore[reportOptionalSubscript]
 
     asyncio.run(run_migrations())
 

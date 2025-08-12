@@ -1,5 +1,7 @@
 import asyncio
+
 from connector import MongoDbConnector
+
 
 def cleanup(config):
     with MongoDbConnector() as mongo_connector:
@@ -16,7 +18,11 @@ def cleanup(config):
                     continue
                 print(f"Running aggregation on collection '{collection_name}'...")
                 try:
-                    await mongo_connector.db[collection_name].aggregate(pipeline).to_list(length=None) # pyright: ignore[reportOptionalSubscript]
+                    await (
+                        mongo_connector.db[collection_name]
+                        .aggregate(pipeline)
+                        .to_list(length=None)
+                    )  # pyright: ignore[reportOptionalSubscript]
                     print(f"Aggregation on '{collection_name}' completed.")
                 except Exception as e:
                     print(f"Error during aggregation for '{collection_name}': {e}")

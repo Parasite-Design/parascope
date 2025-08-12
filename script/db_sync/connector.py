@@ -1,7 +1,9 @@
+from typing import Optional
+
 import config
 import pyodbc
-from typing import Optional
 from motor.motor_asyncio import AsyncIOMotorClient
+
 
 class SqlConnector:
     def __init__(self):
@@ -13,7 +15,9 @@ class SqlConnector:
             config.SQL_PASSWORD,
         ]
         if any(val is None for val in required_configs):
-            raise ValueError("One or more required database configuration values are missing.")
+            raise ValueError(
+                "One or more required database configuration values are missing."
+            )
 
         try:
             self.connection = pyodbc.connect(
@@ -43,6 +47,7 @@ class SqlConnector:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
+
 class MongoDbConnector:
     """
     MongoDB Connector class with context manager support.
@@ -54,14 +59,16 @@ class MongoDbConnector:
             config.MONGODB_DATABASE_NAME,
         ]
         if any(val is None for val in required_configs):
-            raise ValueError("One or more required MongoDB configuration values are missing.")
+            raise ValueError(
+                "One or more required MongoDB configuration values are missing."
+            )
 
         self.client: Optional[AsyncIOMotorClient] = None
         self.db = None
 
         try:
             self.client = AsyncIOMotorClient(config.MONGODB_URI)
-            self.db = self.client[config.MONGODB_DATABASE_NAME] # pyright: ignore[reportArgumentType]
+            self.db = self.client[config.MONGODB_DATABASE_NAME]  # pyright: ignore[reportArgumentType]
             # Test connection (async, so we provide a sync wrapper for context manager)
             # For async usage, call await self.ping()
             print("MongoDB client initialized")
@@ -90,6 +97,7 @@ class MongoDbConnector:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
+
 if __name__ == "__main__":
     with SqlConnector() as conn:
         pass
@@ -103,4 +111,3 @@ if __name__ == "__main__":
                 await mongo.ping()
 
     asyncio.run(main())
-

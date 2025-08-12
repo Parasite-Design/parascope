@@ -27,6 +27,7 @@ class CreateBrandRequest(BrandBase):
 class BrandResponse(BrandBase):
     pass
 
+
 class ObjectiveChangeRequest(BaseModel):
     rep_id: str = Field(..., description="Rep ID of the representative")
     brand_name: Optional[str] = Field(

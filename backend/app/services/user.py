@@ -4,12 +4,11 @@ from typing import List, Optional
 
 from app.core.config import settings
 from app.models.user import UserCreate, UserResponse, UserToken
+from app.utils.database import get_representative_mongo_id
 from app.utils.security import create_access_token, hash_password, verify_password
 from bson import ObjectId
 from fastapi import HTTPException, status
 from motor.motor_asyncio import AsyncIOMotorDatabase
-
-from app.utils.database import get_representative_mongo_id
 
 
 async def create_user_service(user: UserCreate, db: AsyncIOMotorDatabase) -> UserToken:
@@ -23,7 +22,9 @@ async def create_user_service(user: UserCreate, db: AsyncIOMotorDatabase) -> Use
     # Convert representative_id (int) to ObjectId if provided
     representative_object_id: Optional[ObjectId] = None
     if user.representative_id is not None:
-        representative_object_id = await get_representative_mongo_id(user.representative_id, db)
+        representative_object_id = await get_representative_mongo_id(
+            user.representative_id, db
+        )
         if representative_object_id is None:
             raise HTTPException(status_code=404, detail="Representative not found")
 
@@ -62,7 +63,9 @@ async def create_user_service(user: UserCreate, db: AsyncIOMotorDatabase) -> Use
         id=user_id,
         email=user.email,
         is_admin=user.is_admin,
-        representative_id=str(representative_object_id),  # Still return the int code in response
+        representative_id=str(
+            representative_object_id
+        ),  # Still return the int code in response
         created_at=now,
         updated_at=now,
     )

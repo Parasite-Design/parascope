@@ -2,8 +2,8 @@ from fastapi import APIRouter
 
 from .prospects import router as prospects_router
 from .settings import router as settings_router
-from .users import router as users_router
 from .statistics import router as statistics_router
+from .users import router as users_router
 
 api_router = APIRouter()
 

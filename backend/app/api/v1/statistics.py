@@ -1,13 +1,11 @@
-from app.core.database import get_db
 from datetime import datetime
 
+from app.core.database import get_db
 from app.models.user import UserResponse
-
+from app.services.statistic import get_sales_statistics_service
 from app.utils.security import get_current_user
 from fastapi import APIRouter, Depends, Query
 from motor.motor_asyncio import AsyncIOMotorDatabase
-
-from app.services.statistic import get_sales_statistics_service
 
 router = APIRouter()
 

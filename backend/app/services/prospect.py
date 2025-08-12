@@ -33,7 +33,10 @@ async def get_prospect_service(
     if not prospect:
         raise HTTPException(status_code=404, detail="Prospect not found")
     # Authorization: Only creator or admin can access
-    if prospect.get("representative_id") != current_user.representative_id and not current_user.is_admin:
+    if (
+        prospect.get("representative_id") != current_user.representative_id
+        and not current_user.is_admin
+    ):
         raise HTTPException(
             status_code=403, detail="Not authorized to access this prospect"
         )
@@ -73,7 +76,10 @@ async def update_prospect_service(
     existing = await db.prospects.find_one({"_id": obj_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Prospect not found")
-    if existing.get("representative_id") != current_user.representative_id and not current_user.is_admin:
+    if (
+        existing.get("representative_id") != current_user.representative_id
+        and not current_user.is_admin
+    ):
         raise HTTPException(
             status_code=403, detail="Not authorized to modify this prospect"
         )
@@ -97,7 +103,10 @@ async def delete_prospect_service(
     existing = await db.prospects.find_one({"_id": obj_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Prospect not found")
-    if existing.get("representative_id") != current_user.representative_id and not current_user.is_admin:
+    if (
+        existing.get("representative_id") != current_user.representative_id
+        and not current_user.is_admin
+    ):
         raise HTTPException(
             status_code=403, detail="Not authorized to delete this prospect"
         )

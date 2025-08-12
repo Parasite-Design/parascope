@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 
@@ -11,4 +12,3 @@ class TimeRange(BaseModel):
         ...,
         description="Start date of the statistics data",
     )
-
