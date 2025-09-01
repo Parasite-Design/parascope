@@ -64,3 +64,76 @@ async def get_sales_statistics_service(
         del statistics["_id"]  # Remove the _id field if present
 
     return statistics
+
+
+async def get_customers_statistics_service(
+    db: AsyncIOMotorDatabase,
+    current_user: UserResponse,
+    start_date: datetime,
+    end_date: datetime,
+) -> dict:
+    if not current_user.representative_id:
+        raise ValueError("Missing representative_id for current user.")
+
+    pipeline = [
+        {"$match": {"representative_id": ObjectId(current_user.representative_id)}},
+        {
+            "$lookup": {
+                "from": "invoices",
+                "let": {"customerId": "$_id"},
+                "pipeline": [
+                    {
+                        "$match": {
+                            "$expr": {
+                                "$and": [
+                                    {"$eq": ["$customer_id", "$$customerId"]},
+                                    {"$gte": ["$invoice_date", start_date]},
+                                    {"$lte": ["$invoice_date", end_date]},
+                                ]
+                            }
+                        }
+                    }
+                ],
+                "as": "invoices",
+            }
+        },
+        {"$addFields": {"invoice_count": {"$size": "$invoices"}}},
+        {
+            "$group": {
+                "_id": None,
+                "customers": {
+                    "$sum": {
+                        "$cond": {
+                            "if": {"$gte": ["$invoice_count", 1]},
+                            "then": 1,
+                            "else": 0,
+                        }
+                    }
+                },
+                "active_customers": {
+                    "$sum": {
+                        "$cond": {
+                            "if": {"$gte": ["$invoice_count", 4]},
+                            "then": 1,
+                            "else": 0,
+                        }
+                    }
+                },
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "customers": 1,
+                "active_customers": 1,
+            }
+        },
+    ]
+
+    result = await db.customers.aggregate(pipeline).to_list(1)
+    statistics = result[0] if result else {"customers": 0, "active_customers": 0}
+
+    if "_id" in statistics:
+        del statistics["_id"]
+
+    return statistics
