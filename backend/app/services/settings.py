@@ -44,7 +44,6 @@ async def get_all_brands_service(db: AsyncIOMotorDatabase) -> list[BrandResponse
             {}, {"_id": 0, "brand_name": 1, "showed_brand_name": 1}
         )
         brands = [doc async for doc in brands_cursor]
-        print(brands)
         return brands
     except PyMongoError as _:
         return []

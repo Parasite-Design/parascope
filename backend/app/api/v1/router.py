@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from .customers import router as customers_router
+from .dates import router as dates_router
 from .models import router as models_router
 from .products import router as products_router
 from .prospects import router as prospects_router
@@ -17,3 +18,4 @@ api_router.include_router(statistics_router, prefix="/statistics", tags=["statis
 api_router.include_router(products_router, prefix="/products", tags=["products"])
 api_router.include_router(models_router, prefix="/models", tags=["models"])
 api_router.include_router(customers_router, prefix="/customers", tags=["customers"])
+api_router.include_router(dates_router, prefix="/dates", tags=["dates"])

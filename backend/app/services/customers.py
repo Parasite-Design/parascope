@@ -7,12 +7,7 @@ from dateutil.relativedelta import relativedelta
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 
-def compute_visits_and_last(
-    cust: dict,
-    compute_count: bool = False,
-    period_start: Optional[datetime] = None,
-    period_end: Optional[datetime] = None,
-) -> None:
+def compute_visits_and_last(cust: dict) -> None:
     invoices = cust.get("invoices", [])
     grouped = defaultdict(lambda: {"qty": 0, "total": 0, "last_date": None})
 
@@ -46,7 +41,7 @@ def compute_visits_and_last(
     cust["visits"] = visits
     cust["last_visit"] = max((v["date"] for v in visits), default=None)
 
-    if cust.get("visits_count") is None and compute_count:
+    if cust.get("visits_count") is None:
         cust["visits_count"] = 2
 
 
@@ -163,6 +158,35 @@ async def get_customers_service(
                 "active": {"$gte": ["$period1_count", 4]},
             }
         },
+        # Add computed fields: period_progress & objective_progress
+        {
+            "$addFields": {
+                "period_progress": {
+                    "$cond": [
+                        {"$gt": ["$period2_total", 0]},
+                        {
+                            "$multiply": [
+                                {"$divide": ["$period1_total", "$period2_total"]},
+                                100,
+                            ]
+                        },
+                        0,
+                    ]
+                },
+                "objective_progress": {
+                    "$cond": [
+                        {"$gt": ["$objective", 0]},
+                        {
+                            "$multiply": [
+                                {"$divide": ["$period1_count", "$objective"]},
+                                100,
+                            ]
+                        },
+                        0,
+                    ]
+                },
+            }
+        },
         {
             "$project": {
                 "_id": 1,
@@ -179,6 +203,8 @@ async def get_customers_service(
                 "visits_count": 1,
                 "favorite": 1,
                 "active": 1,
+                "period_progress": 1,
+                "objective_progress": 1,
                 "invoices.code": 1,
                 "invoices.quantity": 1,
                 "invoices.total": 1,
@@ -191,9 +217,7 @@ async def get_customers_service(
 
     # --- Post-process visits in Python ---
     for cust in customers:
-        compute_visits_and_last(
-            cust, compute_count=True, period_start=period1_start, period_end=period1_end
-        )
+        compute_visits_and_last(cust)
         cust["_id"] = str(cust["_id"])
         # Cleanup
         del cust["invoices"]

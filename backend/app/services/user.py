@@ -144,7 +144,6 @@ async def change_password_service(
     db,
 ):
     user = await db.users.find_one({"_id": user_id})
-    print(user)
     if not user or not verify_password(current_password, user["password"]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

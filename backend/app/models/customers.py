@@ -28,7 +28,7 @@ class CustomerUpdateRequest(BaseModel):
     )
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "objective": 100,
                 "visits_count": 5,
