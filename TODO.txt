@@ -85,3 +85,6 @@ DB DESIGN:
   "key": "GB",
   "name": "Gilles Bordet"
 }
+
+Abandonned stuff:
+    Customers brand
