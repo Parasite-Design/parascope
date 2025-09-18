@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 
 const router = createRouter({
@@ -13,16 +14,29 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../views/Home.vue'),
+      component: Home,
+      meta: { requiresAuth: true }
+    },
+    // router/index.ts
+    {
+      path: '/prospects',
+      name: 'prospects',
+      component: () => import('../views/Prospects.vue'),
       meta: { requiresAuth: true }
     }
+    // ... other routes
   ]
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
+  
   if (to.meta.requiresAuth && !authStore.isAuthenticated()) {
+    // Only redirect to login, don't call logout
     next('/login')
+  } else if (to.meta.requiresAdmin && !authStore.user?.is_admin) {
+    // Redirect to home if not admin, don't call logout
+    next('/')
   } else {
     next()
   }

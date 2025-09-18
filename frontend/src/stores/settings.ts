@@ -33,20 +33,15 @@ export const useSettingsStore = defineStore('settings', () => {
       brands.value = response.data
     } catch (error) {
       console.error('Failed to fetch brands:', error)
+      throw error
     }
   }
   
   const fetchPeriod = async (periodType: string) => {
     try {
-      let endpoint
-      if (periodType === 'rolling') {
-        endpoint = '/api/v1/dates/rolling-year'
-      } else if (periodType === 'fiscal') {
-        endpoint = '/api/v1/dates/n/-1'
-      } else {
-        // For custom period, we don't fetch from API
-        return
-      }
+      const endpoint = periodType === 'rolling' 
+        ? '/api/v1/dates/rolling-year' 
+        : `/api/v1/dates/n/${periodType === 'fiscal' ? -1 : 0}`
       
       const response = await axios.get(`http://localhost:8000${endpoint}`, {
         headers: {
@@ -61,6 +56,7 @@ export const useSettingsStore = defineStore('settings', () => {
       localStorage.setItem('selectedPeriodType', periodType)
     } catch (error) {
       console.error('Failed to fetch period:', error)
+      throw error
     }
   }
   
@@ -82,18 +78,26 @@ export const useSettingsStore = defineStore('settings', () => {
   }
   
   // Initialize from localStorage
-  const initialize = () => {
+  const initialize = async () => {
     if (selectedPeriodType.value === 'custom' && customPeriodStart.value && customPeriodEnd.value) {
       period.value = {
         period_start: customPeriodStart.value,
         period_end: customPeriodEnd.value
       }
-    } else if (selectedPeriodType.value && selectedPeriodType.value !== 'custom') {
-      fetchPeriod(selectedPeriodType.value)
+    } else if (selectedPeriodType.value && authStore.isAuthenticated()) {
+      try {
+        await fetchPeriod(selectedPeriodType.value)
+      } catch (error) {
+        console.error('Failed to fetch period during initialization:', error)
+      }
     }
     
     if (authStore.isAuthenticated()) {
-      fetchBrands()
+      try {
+        await fetchBrands()
+      } catch (error) {
+        console.error('Failed to fetch brands during initialization:', error)
+      }
     }
   }
   

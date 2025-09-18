@@ -1,7 +1,13 @@
 <template>
   <el-header class="app-header">
     <div class="header-left">
-      <h2>Parascope</h2>
+      <el-button
+        @click="uiStore.toggleSidebar"
+        :icon="Menu"
+        circle
+        class="sidebar-toggle"
+      />
+      <h2>I-VISION</h2>
     </div>
     <div class="header-right">
       <span class="user-info">Welcome, {{ authStore.user?.email }}</span>
@@ -86,12 +92,14 @@
 import { ref, computed, onMounted } from "vue";
 import { useAuthStore } from "../stores/auth";
 import { useSettingsStore } from "../stores/settings";
+import { useUIStore } from "../stores/ui";
 import { useRouter } from "vue-router";
-import { Setting, SwitchButton } from "@element-plus/icons-vue";
+import { Setting, SwitchButton, Menu } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 
 const authStore = useAuthStore();
 const settingsStore = useSettingsStore();
+const uiStore = useUIStore();
 const router = useRouter();
 
 const settingsDrawer = ref(false);
@@ -142,6 +150,18 @@ const formatDate = (dateString: string) => {
   color: white;
   padding: 0 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 60px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .header-left h2 {
@@ -158,6 +178,16 @@ const formatDate = (dateString: string) => {
 .user-info {
   margin-right: 10px;
   font-size: 14px;
+}
+
+.sidebar-toggle {
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.sidebar-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .settings-content {

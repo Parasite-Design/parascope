@@ -1,6 +1,8 @@
 import csv
 import io
-from typing import List, Optional
+import re
+from enum import Enum
+from typing import Any, Dict, Optional
 
 from app.core.database import get_db
 from app.models.prospect import ProspectCreate, ProspectResponse, ProspectUpdate
@@ -10,6 +12,7 @@ from app.services.prospect import (
     delete_prospect_service,
     get_all_prospects_service,
     get_prospect_service,
+    mongo_to_prospect_response,
     update_prospect_service,
 )
 from app.utils.database import get_representative_code_by_mongo_id
@@ -19,8 +22,26 @@ from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from pydantic import BaseModel
 
 router = APIRouter()
+
+VALID_SORT_FIELDS = [
+    "name",
+    "contact_name",
+    "status",
+    "email",
+    "phone",
+    "city",
+    "country",
+    "prospect_interest",
+    "commercial_interest",
+    "last_visit",
+    "next_visit",
+    "favorite",
+    "created_at",
+    "updated_at",
+]
 
 
 @router.get("/{prospect_id}", response_model=ProspectResponse)
@@ -73,16 +94,107 @@ async def delete_prospect(
     return {"message": "Prospect deleted successfully"}
 
 
-@router.get("/", response_model=List[ProspectResponse])
+class SortOrder(str, Enum):
+    ASC = "asc"
+    DESC = "desc"
+
+
+class ProspectFilter(BaseModel):
+    search: Optional[str] = None
+    status: Optional[str] = None
+    favorite: Optional[bool] = None
+    brand: Optional[str] = None
+    sort_by: Optional[str] = "created_at"
+    sort_order: Optional[SortOrder] = SortOrder.DESC
+    page: Optional[int] = 1
+    limit: Optional[int] = 10
+
+
+@router.get("/", response_model=Dict[str, Any])
 async def get_all_prospects(
+    search: Optional[str] = Query(None),
+    status: Optional[str] = Query(None),
+    favorite: Optional[str] = Query(None),  # Change to string first
+    brand: Optional[str] = Query(None),
+    sort_by: Optional[str] = Query("created_at"),
+    sort_order: Optional[SortOrder] = Query(SortOrder.DESC),
+    page: Optional[int] = Query(1, ge=1),
+    limit: Optional[int] = Query(10, ge=1, le=100),
     db: AsyncIOMotorDatabase = Depends(get_db),
     current_user: UserResponse = Depends(get_current_user),
-    brand: Optional[str] = Query(None, description="Filter prospects by brand"),
 ):
     """
-    Retrieve all prospects, optionally filtered by brand.
+    Get all prospects with filtering, sorting, and pagination.
     """
-    return await get_all_prospects_service(db, current_user, brand=brand)
+    # Build the filter query
+    filter_query = {"representative_id": current_user.representative_id}
+
+    if brand:
+        filter_query["brands"] = brand
+
+    if status:
+        filter_query["status"] = status
+
+    # Handle favorite filter properly
+    if favorite is not None:
+        # Convert string to boolean
+        if favorite.lower() == "true":
+            filter_query["favorite"] = True  # pyright: ignore[reportArgumentType]
+        elif favorite.lower() == "false":
+            filter_query["favorite"] = False  # pyright: ignore[reportArgumentType]
+        # If it's anything else, we don't filter by favorite
+
+    if search:
+        # Create a regex pattern for case-insensitive search
+        regex = re.compile(f".*{re.escape(search)}.*", re.IGNORECASE)
+        filter_query["$or"] = [  # pyright: ignore[reportArgumentType]
+            {"name": regex},
+            {"contact_name": regex},
+            {"email": regex},
+            {"phone": regex},
+            {"city": regex},
+            {"country": regex},
+            {"address": regex},
+        ]
+
+    # Validate sort field
+    if sort_by not in VALID_SORT_FIELDS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid sort field. Must be one of: {', '.join(VALID_SORT_FIELDS)}",
+        )
+
+    # Determine sort order
+    sort_direction = 1 if sort_order == SortOrder.ASC else -1
+
+    # Calculate skip for pagination
+    skip = (page - 1) * limit  # pyright: ignore[reportOperatorIssue, reportOptionalOperand]
+
+    # Query MongoDB with filters, sorting, and pagination
+    cursor = (
+        db.prospects.find(filter_query)
+        .sort(sort_by, sort_direction)
+        .skip(skip)
+        .limit(limit)  # pyright: ignore[reportArgumentType]
+    )
+    prospects = await cursor.to_list(length=limit)
+
+    # Get total count for pagination
+    total_count = await db.prospects.count_documents(filter_query)
+
+    # Convert to response model
+    response_prospects = [
+        mongo_to_prospect_response(prospect) for prospect in prospects
+    ]
+
+    # Return response with pagination metadata
+    return {
+        "items": response_prospects,
+        "total_count": total_count,
+        "page": page,
+        "limit": limit,
+        "has_more": (page * limit) < total_count,  # pyright: ignore[reportOperatorIssue]
+    }
 
 
 @router.post("/{prospect_id}/locate", response_model=ProspectResponse)

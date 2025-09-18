@@ -2,12 +2,15 @@ import secrets
 from datetime import datetime, timedelta
 from typing import List, Optional
 
+import jwt
 from app.core.config import settings
 from app.models.user import UserCreate, UserResponse, UserToken
 from app.utils.database import get_representative_mongo_id
 from app.utils.security import create_access_token, hash_password, verify_password
 from bson import ObjectId
+from bson.errors import InvalidId
 from fastapi import HTTPException, status
+from jwt import PyJWTError
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 
@@ -135,6 +138,95 @@ async def logout_user_service(user_id: ObjectId, db):
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
     return {"message": "Logged out successfully"}
+
+
+async def refresh_token_service(
+    refresh_token: str, db: AsyncIOMotorDatabase
+) -> UserToken:
+    """
+    Service to refresh access token using a valid refresh token.
+    """
+    try:
+        # Verify the refresh token
+        payload = jwt.decode(
+            refresh_token,
+            settings.JWT_SECRET_KEY,  # pyright: ignore[reportArgumentType]
+            algorithms=[settings.JWT_ALGORITHM],  # pyright: ignore[reportArgumentType]
+        )
+
+        # Check if it's a refresh token
+        if payload.get("type") != "refresh":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token type"
+            )
+
+        user_id = payload.get("sub")
+        if not user_id:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
+            )
+
+        # Convert to ObjectId
+        try:
+            user_oid = ObjectId(user_id)
+        except (InvalidId, TypeError):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid user ID"
+            )
+
+        # Find user in database
+        user = await db.users.find_one({"_id": user_oid})
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+            )
+
+        # Check if the refresh token matches the one in database
+        if user.get("refresh_token") != refresh_token:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token"
+            )
+
+        # Generate new tokens
+        now = datetime.now()
+        access_token = create_access_token(
+            data={"sub": user_id},
+            expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+        )
+        new_refresh_token = create_access_token(
+            data={"sub": user_id, "type": "refresh"},
+            expires_delta=timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS),
+        )
+
+        # Update refresh token in DB
+        await db.users.update_one(
+            {"_id": user_oid},
+            {"$set": {"refresh_token": new_refresh_token, "updated_at": now}},
+        )
+
+        # Prepare user response
+        user_response = UserResponse(
+            id=user_id,
+            email=user["email"],
+            is_admin=user.get("is_admin", False),
+            representative_id=str(user.get("representative_id")),
+            created_at=user.get("created_at"),
+            updated_at=now,
+        )
+
+        return UserToken(
+            access_token=access_token,
+            refresh_token=new_refresh_token,
+            token_type="bearer",
+            expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+            user=user_response,
+        )
+
+    except PyJWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token",
+        )
 
 
 async def change_password_service(

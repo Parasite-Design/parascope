@@ -101,8 +101,8 @@ class ProspectUpdate(BaseModel):
     favorite: Optional[bool] = Field(None)
 
     @field_validator("next_visit")
-    def next_visit_must_be_after_last_visit(cls, v, values):
-        last_visit = values.get("last_visit")
+    def next_visit_must_be_after_last_visit(cls, v, info: ValidationInfo):
+        last_visit = info.data.get("last_visit")
         if last_visit and v and v < last_visit:
             raise ValueError("next_visit must be after last_visit")
         return v
@@ -118,11 +118,6 @@ class ProspectResponse(ProspectBase):
     representative_id: str = Field(..., description="Linked representative id")
     created_at: datetime.datetime = Field(..., description="Creation timestamp")
     updated_at: datetime.datetime = Field(..., description="Last update timestamp")
-    latitude: Optional[float] = Field(None, description="Latitude of the prospect")
-    longitude: Optional[float] = Field(None, description="Longitude of the prospect")
-    brands: List[str] = Field(
-        ..., description="List of brands associated with the prospect"
-    )
 
 
 class ProspectDelete(BaseModel):

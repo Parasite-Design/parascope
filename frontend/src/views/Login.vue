@@ -6,7 +6,7 @@
       <div class="login-box">
         <div class="logo-container">
           <img :src="logo" alt="Company Logo" class="logo" />
-          <h1 class="company-name">Parascope</h1>
+          <h1 class="company-name">I-VISION</h1>
         </div>
 
         <el-card shadow="always" class="login-form-card">

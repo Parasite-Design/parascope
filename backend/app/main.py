@@ -5,7 +5,7 @@ from app.api.v1.router import api_router
 from app.core.database import close_mongo_connection, connect_to_mongo
 
 app = FastAPI(
-    title="Parascope API",
+    title="I-VISION API",
     version="1.0.0",
     docs_url="/api/v1/docs",
     redoc_url="/api/v1/redoc",

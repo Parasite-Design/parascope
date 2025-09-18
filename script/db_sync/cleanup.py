@@ -19,7 +19,7 @@ def cleanup(config):
                 print(f"Running aggregation on collection '{collection_name}'...")
                 try:
                     await (
-                        mongo_connector.db[collection_name]
+                        mongo_connector.db[collection_name] # pyright: ignore[reportOptionalSubscript]
                         .aggregate(pipeline)
                         .to_list(length=None)
                     )  # pyright: ignore[reportOptionalSubscript]

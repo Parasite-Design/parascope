@@ -16,12 +16,6 @@ def mongo_to_prospect_response(doc: dict) -> ProspectResponse:
     return ProspectResponse(**doc)
 
 
-def calculate_score(prospect_interest, commercial_interest):
-    if prospect_interest is not None and commercial_interest is not None:
-        return prospect_interest + commercial_interest
-    return None
-
-
 async def get_prospect_service(
     prospect_id: str, db: AsyncIOMotorDatabase, current_user: UserResponse
 ) -> ProspectResponse:
@@ -41,6 +35,12 @@ async def get_prospect_service(
             status_code=403, detail="Not authorized to access this prospect"
         )
     return mongo_to_prospect_response(prospect)
+
+
+def calculate_score(prospect_interest, commercial_interest):
+    if prospect_interest is not None and commercial_interest is not None:
+        return prospect_interest + commercial_interest
+    return None
 
 
 async def create_prospect_service(
