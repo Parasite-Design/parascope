@@ -1,3 +1,4 @@
+import math
 from collections import defaultdict
 from datetime import datetime
 from typing import List, Optional
@@ -39,10 +40,86 @@ def compute_visits_and_last(cust: dict) -> None:
             )
 
     cust["visits"] = visits
-    cust["last_visit"] = max((v["date"] for v in visits), default=None)
 
+    # Safely get last_visit - handle empty visits list
+    if visits:
+        cust["last_visit"] = max(
+            (v["date"] for v in visits if v["date"] is not None), default=None
+        )
+    else:
+        cust["last_visit"] = None
+
+    # Calculate next_visit - handle None last_visit
+    last_visit = cust.get("last_visit")
+    visits_count = cust.get("visits_count", 2)  # Default to 2 if not set
+
+    if last_visit and visits_count and visits_count > 0:
+        try:
+            # Calculate months between visits (12 months / visits_count)
+            months_between = 12 / visits_count
+            next_visit = last_visit + relativedelta(months=math.ceil(months_between))
+            cust["next_visit"] = next_visit
+        except (TypeError, ValueError) as e:
+            print(f"Error calculating next_visit for customer {cust.get('code')}: {e}")
+            cust["next_visit"] = None
+    else:
+        # If no last_visit, set next_visit to None or you could set a default
+        cust["next_visit"] = None
+
+    # Ensure visits_count has a default value
     if cust.get("visits_count") is None:
         cust["visits_count"] = 2
+
+
+def score_client(client: dict) -> float:
+    """
+    Calculate a priority score for the client.
+    Higher score means higher priority to contact.
+    """
+    # Use period2_total as last year's total (ly_total)
+    ly_total = client.get("period2_total", 0)
+    client_score = float(ly_total)
+
+    if client_score == 0:
+        # If no sales history, set a base score for new customers
+        client_score = 100
+
+    # Calculate year-over-year difference percentage
+    period1_total = client.get("period1_total", 0)
+    period2_total = client.get("period2_total", 0)
+
+    if period2_total > 0:
+        ly_diff = ((period1_total - period2_total) / period2_total) * 100
+    else:
+        ly_diff = 100 if period1_total > 0 else 0  # New customer or no sales
+
+    # Apply LY difference factor - inverted so negative growth increases priority
+    # If sales are down (negative ly_diff), we want higher priority
+    ly_diff_factor = (100 + min(max(ly_diff, -99), 99)) / 10
+    client_score *= ly_diff_factor
+
+    # Apply time since last visit factor
+    now = datetime.now()
+    last_visit = client.get("last_visit")
+    if last_visit and isinstance(last_visit, datetime):
+        days_since_visit = (now - last_visit).days
+        # Convert to 6-month periods, with minimum of 4
+        six_month_periods = max(days_since_visit / (30.5 * 6), 4)
+        client_score *= six_month_periods
+    else:
+        # No last visit - treat as very old visit to increase priority
+        client_score *= 20  # Equivalent to ~3 years without visit
+
+    # Apply objective difference factor
+    objective = client.get("objective", 0)
+    if objective > 0:
+        objective_diff = ((objective - period1_total) / objective) * 100
+        # Inverted: if below objective, increase priority
+        objective_factor = (100 + min(max(objective_diff, -99), 99)) / 10
+        client_score *= objective_factor
+
+    client["score"] = round(client_score, 2)
+    return client_score
 
 
 async def get_customers_service(
@@ -151,7 +228,7 @@ async def get_customers_service(
                     "$cond": [
                         {"$ifNull": ["$visits_count", False]},
                         "$visits_count",
-                        None,  # we'll fill it in Python
+                        2,  # Default to 2 if not set
                     ]
                 },
                 "favorite": {"$ifNull": ["$favorite", False]},
@@ -215,13 +292,14 @@ async def get_customers_service(
 
     customers = await db.customers.aggregate(pipeline).to_list(None)
 
-    # --- Post-process visits in Python ---
+    # --- Post-process visits and scores in Python ---
     for cust in customers:
         compute_visits_and_last(cust)
+        score_client(cust)  # Calculate priority score
         cust["_id"] = str(cust["_id"])
         # Cleanup
         del cust["invoices"]
-        del cust["visits"]
+        # Note: We keep "visits" for the detailed view
 
     return customers
 
@@ -238,6 +316,10 @@ async def get_customer_service(
         raise ValueError("Missing representative_id for current user.")
 
     customer_id = ObjectId(customer_id_str)
+
+    # Calculate period2 (last year) for scoring
+    period2_start = period_start - relativedelta(years=1)
+    period2_end = period_end - relativedelta(years=1)
 
     pipeline = [
         # Only this customer for this representative
@@ -273,7 +355,7 @@ async def get_customer_service(
                 }
             }
         },
-        # Add period totals & counts (order_date based)
+        # Add period totals & counts for both current and previous year
         {
             "$addFields": {
                 "period1_total": {
@@ -315,6 +397,31 @@ async def get_customer_service(
                         }
                     }
                 },
+                "period2_total": {
+                    "$sum": {
+                        "$map": {
+                            "input": {
+                                "$filter": {
+                                    "input": "$invoices",
+                                    "as": "inv",
+                                    "cond": {
+                                        "$and": [
+                                            {
+                                                "$gte": [
+                                                    "$$inv.order_date",
+                                                    period2_start,
+                                                ]
+                                            },
+                                            {"$lte": ["$$inv.order_date", period2_end]},
+                                        ]
+                                    },
+                                }
+                            },
+                            "as": "p2",
+                            "in": "$$p2.total",
+                        }
+                    }
+                },
             }
         },
         # Objective and other fields
@@ -331,7 +438,7 @@ async def get_customer_service(
                     "$cond": [
                         {"$ifNull": ["$visits_count", False]},
                         "$visits_count",
-                        None,  # we'll fill it in Python
+                        2,  # Default to 2 if not set
                     ]
                 },
                 "favorite": {"$ifNull": ["$favorite", False]},
@@ -350,6 +457,7 @@ async def get_customer_service(
                 "longitude": 1,
                 "period1_total": 1,
                 "period1_count": 1,
+                "period2_total": 1,
                 "objective": 1,
                 "visits_count": 1,
                 "favorite": 1,
@@ -369,8 +477,9 @@ async def get_customer_service(
 
     customer = customers[0]
 
-    # --- Post-process visits in Python ---
+    # --- Post-process visits and scores in Python ---
     compute_visits_and_last(customer)
+    score_client(customer)  # Calculate priority score
 
     # --- Compute period sums in Python ---
     now = datetime.now()

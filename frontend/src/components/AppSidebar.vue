@@ -28,14 +28,12 @@
           </template>
 
         <!-- Customers -->
-        <el-sub-menu index="customers">
+        <el-menu-item index="/customers">
+          <el-icon><Avatar /></el-icon>
           <template #title>
-            <el-icon><Avatar /></el-icon>
             <span>Customers</span>
           </template>
-          <el-menu-item index="/customers">All Customers</el-menu-item>
-          <el-menu-item index="/customers/create">Create Customer</el-menu-item>
-        </el-sub-menu>
+        </el-menu-item>
 
         <!-- Products -->
         <el-menu-item index="/products">

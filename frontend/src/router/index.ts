@@ -23,6 +23,19 @@ const router = createRouter({
       name: 'prospects',
       component: () => import('../views/Prospects.vue'),
       meta: { requiresAuth: true }
+    },
+    // router/index.ts
+    {
+      path: '/customers',
+      name: 'customers',
+      component: () => import('../views/Customers.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/products',
+      name: 'products',
+      component: () => import('../views/Products.vue'),
+      meta: { requiresAuth: true }
     }
     // ... other routes
   ]

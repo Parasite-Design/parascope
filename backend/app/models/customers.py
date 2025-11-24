@@ -8,7 +8,7 @@ router = APIRouter()
 
 # Pydantic model for customer update request
 class CustomerUpdateRequest(BaseModel):
-    objective: Optional[int] = Field(
+    objective: Optional[float] = Field(
         None,
         description="The customer's objective value",
         ge=0,  # Ensures value is greater than or equal to 0 if provided

@@ -1,7 +1,15 @@
+FIX
+product page performance
+login
+wip for products
+
+OPTIONAL FIX
+reset web page 
+
 bakend:
-page finished: AUTH(new), ADMIN(new), PROSPECTS
+page finished: AUTH(new), ADMIN(new), PROSPECTS(new), CUSTOMERS(new), PRODUCTS(new)
 page started: MAP
-page TODO: CUSTOMERS, PRODUCTS, PERF
+page TODO: PERF
 
 MAP - add customers geoloc
 
