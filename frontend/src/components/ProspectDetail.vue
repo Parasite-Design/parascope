@@ -30,7 +30,33 @@
         </el-descriptions-item>
         
         <el-descriptions-item label="Address" :span="2">
-          {{ prospect.address }}, {{ prospect.city }}, {{ prospect.country }}
+          {{ prospect.address }}, {{ prospect.city }}, {{ prospect.postal_code }}, {{ prospect.country }}
+        </el-descriptions-item>
+        
+        <el-descriptions-item label="City">
+          {{ prospect.city }}
+        </el-descriptions-item>
+        
+        <el-descriptions-item label="Postal Code">
+          {{ prospect.postal_code || '-' }}
+        </el-descriptions-item>
+        
+        <el-descriptions-item label="Country">
+          {{ prospect.country }}
+        </el-descriptions-item>
+        
+        <el-descriptions-item label="Brands" :span="2">
+          <div class="brands-list">
+            <el-tag
+              v-for="brand in prospect.brands"
+              :key="brand"
+              size="small"
+              style="margin-right: 4px; margin-bottom: 4px;"
+            >
+              {{ getBrandDisplayName(brand) }}
+            </el-tag>
+            <span v-if="!prospect.brands || prospect.brands.length === 0">-</span>
+          </div>
         </el-descriptions-item>
         
         <el-descriptions-item label="Prospect Interest">
@@ -53,6 +79,19 @@
             text-color="#ff9900"
             score-template="{value}"
           />
+        </el-descriptions-item>
+        
+        <el-descriptions-item label="Overall Interest">
+          <span class="overall-interest">
+            {{ prospect.prospect_interest + prospect.commercial_interest }}/10
+          </span>
+        </el-descriptions-item>
+        
+        <el-descriptions-item label="Favorite">
+          <el-icon :color="prospect.favorite ? '#ffc107' : '#dcdfe6'" :size="20">
+            <StarFilled v-if="prospect.favorite" />
+            <Star v-else />
+          </el-icon>
         </el-descriptions-item>
         
         <el-descriptions-item label="Last Visit">
@@ -104,8 +143,14 @@
 </template>
 
 <script setup lang="ts">
+import { Star, StarFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { ref, watch } from 'vue'
+
+interface Brand {
+  brand_name: string
+  showed_brand_name: string
+}
 
 interface Prospect {
   id: string
@@ -117,6 +162,7 @@ interface Prospect {
   email: string
   city: string
   country: string
+  postal_code: string
   address: string
   prospect_interest: number
   commercial_interest: number
@@ -134,6 +180,7 @@ interface Prospect {
 const props = defineProps<{
   visible: boolean
   prospect: Prospect | null
+  availableBrands: Brand[]
 }>()
 
 const emit = defineEmits(['update:visible', 'update-prospect'])
@@ -153,16 +200,21 @@ watch(visible, (val) => {
   emit('update:visible', val)
 })
 
+const getBrandDisplayName = (brandName: string): string => {
+  const brand = props.availableBrands.find(b => b.brand_name === brandName)
+  return brand ? brand.showed_brand_name : brandName
+}
+
 const statusTagType = (status: string) => {
   const types: { [key: string]: string } = {
     'New': 'info',
     'Pending': 'warning',
     'Lost': 'danger',
     'Converted': 'success',
-    'Ready': '',
+    'Ready': 'success',
     'Blocked': 'danger'
   }
-  return types[status] || ''
+  return types[status] || 'info'
 }
 
 const formatDate = (dateString: string | null) => {
@@ -200,6 +252,17 @@ const openInMaps = () => {
   background-color: #f9f9f9;
   border-radius: 4px;
   min-height: 60px;
+}
+
+.brands-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.overall-interest {
+  font-weight: bold;
+  color: #409EFF;
 }
 
 :deep(.el-descriptions__body) {

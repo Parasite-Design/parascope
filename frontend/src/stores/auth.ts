@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useSettingsStore } from "../stores/settings";
 
 // Create axios instance with base configuration
@@ -17,6 +17,17 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref(JSON.parse(localStorage.getItem('user') || 'null'))
   const isRefreshing = ref(false)
   const refreshSubscribers = ref<((token: string) => void)[]>([])
+  const adminStatus = ref<boolean | null>(null) // Track admin status separately
+
+  // Computed property for easy access to admin status
+  const isAdmin = computed(() => {
+    // First check the locally stored user data
+    if (user.value?.is_admin !== undefined) {
+      return user.value.is_admin;
+    }
+    // Fall back to the separately tracked admin status
+    return adminStatus.value || false;
+  })
 
   // Set up interceptors only once
   if (!interceptorsSetUp) {
@@ -118,11 +129,15 @@ export const useAuthStore = defineStore('auth', () => {
       refreshToken.value = refresh_token
       user.value = userData
       
+      // Update admin status from user data
+      adminStatus.value = userData?.is_admin || false
+      
       localStorage.setItem('token', access_token)
       localStorage.setItem('refreshToken', refresh_token)
       localStorage.setItem('user', JSON.stringify(userData))
       
       console.log('Tokens stored in localStorage');
+      console.log('Admin status:', adminStatus.value);
       
       // Initialize settings after login
       const settingsStore = useSettingsStore()
@@ -161,6 +176,7 @@ export const useAuthStore = defineStore('auth', () => {
       token.value = null
       refreshToken.value = null
       user.value = null
+      adminStatus.value = null
       localStorage.removeItem('token')
       localStorage.removeItem('refreshToken')
       localStorage.removeItem('user')
@@ -188,6 +204,52 @@ export const useAuthStore = defineStore('auth', () => {
     return response.data
   }
 
+  // New method to check admin status from server
+  const checkAdminStatus = async (): Promise<boolean> => {
+    try {
+      const response = await api.get('/api/v1/is-admin', {
+        headers: {
+          Authorization: `Bearer ${token.value}`
+        }
+      })
+      
+      const { is_admin } = response.data
+      
+      // Update both the user object and the separate admin status
+      if (user.value) {
+        user.value.is_admin = is_admin
+        localStorage.setItem('user', JSON.stringify(user.value))
+      }
+      adminStatus.value = is_admin
+      
+      console.log('Admin status checked:', is_admin)
+      return is_admin
+    } catch (error: any) {
+      console.error('Failed to check admin status:', error)
+      
+      // If the request fails due to auth, we might not be admin
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        adminStatus.value = false
+        return false
+      }
+      
+      // For other errors, we'll return the current cached status
+      return isAdmin.value
+    }
+  }
+
+  // Initialize admin status from localStorage on store creation
+  const initializeAdminStatus = () => {
+    if (user.value?.is_admin !== undefined) {
+      adminStatus.value = user.value.is_admin
+    } else {
+      adminStatus.value = false
+    }
+  }
+
+  // Call initialization
+  initializeAdminStatus()
+
   const isAuthenticated = () => !!token.value
 
   return { 
@@ -197,6 +259,9 @@ export const useAuthStore = defineStore('auth', () => {
     login, 
     logout, 
     refresh, 
-    isAuthenticated
+    isAuthenticated,
+    isAdmin, // Export computed property
+    adminStatus, // Export ref for direct access if needed
+    checkAdminStatus // Export method to check admin status
   }
 })

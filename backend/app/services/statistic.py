@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from app.models.user import UserResponse
 from bson import ObjectId
@@ -10,17 +11,23 @@ async def get_sales_statistics_service(
     current_user: UserResponse,
     start_date: datetime,
     end_date: datetime,
+    brand: Optional[str] = None,  # Added optional brand parameter
 ) -> dict:
     if not current_user.representative_id:
         raise ValueError("Missing representative_id for current user.")
 
+    # Build the base match condition
+    match_condition = {
+        "order_date": {"$gte": start_date, "$lte": end_date},
+        "representative_id": ObjectId(current_user.representative_id),
+    }
+
+    # Add brand filter if provided
+    if brand:
+        match_condition["brand"] = brand
+
     pipeline = [
-        {
-            "$match": {
-                "order_date": {"$gte": start_date, "$lte": end_date},
-                "representative_id": ObjectId(current_user.representative_id),
-            }
-        },
+        {"$match": match_condition},
         {
             "$group": {
                 "_id": None,
@@ -44,6 +51,7 @@ async def get_sales_statistics_service(
             }
         },
     ]
+
     result = await db.invoices.aggregate(pipeline).to_list(1)
     statistics = (
         result[0]
@@ -61,7 +69,7 @@ async def get_sales_statistics_service(
     )
 
     if "_id" in statistics:
-        del statistics["_id"]  # Remove the _id field if present
+        del statistics["_id"]
 
     return statistics
 
@@ -71,9 +79,25 @@ async def get_customers_statistics_service(
     current_user: UserResponse,
     start_date: datetime,
     end_date: datetime,
+    brand: Optional[str] = None,  # Added optional brand parameter
 ) -> dict:
     if not current_user.representative_id:
         raise ValueError("Missing representative_id for current user.")
+
+    # Build the base invoice match condition for the lookup
+    invoice_match_condition = {
+        "$expr": {
+            "$and": [
+                {"$eq": ["$customer_id", "$$customerId"]},
+                {"$gte": ["$invoice_date", start_date]},
+                {"$lte": ["$invoice_date", end_date]},
+            ]
+        }
+    }
+
+    # Add brand filter if provided
+    if brand:
+        invoice_match_condition["$expr"]["$and"].append({"$eq": ["$brand", brand]})
 
     pipeline = [
         {"$match": {"representative_id": ObjectId(current_user.representative_id)}},
@@ -81,19 +105,7 @@ async def get_customers_statistics_service(
             "$lookup": {
                 "from": "invoices",
                 "let": {"customerId": "$_id"},
-                "pipeline": [
-                    {
-                        "$match": {
-                            "$expr": {
-                                "$and": [
-                                    {"$eq": ["$customer_id", "$$customerId"]},
-                                    {"$gte": ["$invoice_date", start_date]},
-                                    {"$lte": ["$invoice_date", end_date]},
-                                ]
-                            }
-                        }
-                    }
-                ],
+                "pipeline": [{"$match": invoice_match_condition}],
                 "as": "invoices",
             }
         },

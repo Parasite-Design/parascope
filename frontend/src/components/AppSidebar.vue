@@ -22,11 +22,11 @@
         <!-- Prospects -->
         <el-menu-item index="/prospects">
           <el-icon><User /></el-icon>
-          Prospects</el-menu-item>
           <template #title>
             <span>Prospects</span>
           </template>
-
+        </el-menu-item>
+          
         <!-- Customers -->
         <el-menu-item index="/customers">
           <el-icon><Avatar /></el-icon>
@@ -44,22 +44,19 @@
         <!-- Models -->
         <el-menu-item index="/models">
           <el-icon><Box /></el-icon>
-          <template #title>Models</template>
+          <template #title>Colors</template>
         </el-menu-item>
 
-        <!-- Statistics -->
-        <el-sub-menu index="statistics">
-          <template #title>
-            <el-icon><DataAnalysis /></el-icon>
-            <span>Statistics</span>
-          </template>
-          <el-menu-item index="/statistics/sales"
-            >Sales Statistics</el-menu-item
-          >
-          <el-menu-item index="/statistics/customers"
-            >Customer Statistics</el-menu-item
-          >
-        </el-sub-menu>
+        <!-- Models -->
+        <el-menu-item index="/map">
+          <el-icon><Box /></el-icon>
+          <template #title>Map</template>
+        </el-menu-item>
+
+        <el-menu-item index="/account">
+          <el-icon><Lock /></el-icon>
+          <template #title>Account</template>
+        </el-menu-item>
 
         <!-- Settings -->
         <el-sub-menu index="settings">
@@ -73,17 +70,6 @@
           >
         </el-sub-menu>
 
-        <!-- User Management (Admin only) -->
-        <el-sub-menu index="admin" v-if="authStore.user?.is_admin">
-          <template #title>
-            <el-icon><Lock /></el-icon>
-            <span>Admin</span>
-          </template>
-          <el-menu-item index="/admin/users">User Management</el-menu-item>
-          <el-menu-item index="/admin/password-reset"
-            >Password Reset</el-menu-item
-          >
-        </el-sub-menu>
       </el-menu>
     </el-scrollbar>
 
@@ -101,7 +87,6 @@ import {
   ArrowLeft,
   Avatar,
   Box,
-  DataAnalysis,
   House,
   Lock,
   ShoppingBag,

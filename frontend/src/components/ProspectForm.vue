@@ -8,7 +8,7 @@
     <el-steps :active="activeStep" simple>
       <el-step title="Basic Info" />
       <el-step title="Contact Details" />
-      <el-step title="Interest & Status" />
+      <el-step title="Brands & Interest" />
       <el-step title="Review" />
     </el-steps>
 
@@ -60,13 +60,40 @@
           <el-input v-model="form.city" placeholder="Enter city" />
         </el-form-item>
         
+        <el-form-item label="Postal Code" prop="postal_code">
+          <el-input v-model="form.postal_code" placeholder="Enter postal code" />
+        </el-form-item>
+        
         <el-form-item label="Country" prop="country">
           <el-input v-model="form.country" placeholder="Enter country" />
         </el-form-item>
       </div>
 
-      <!-- Step 3: Interest & Status -->
+      <!-- Step 3: Brands & Interest -->
       <div v-if="activeStep === 2">
+        <el-form-item label="Brands" prop="brands">
+          <el-select
+            v-model="form.brands"
+            multiple
+            filterable
+            allow-create
+            default-first-option
+            :reserve-keyword="false"
+            placeholder="Type or select brands"
+            style="width: 100%;"
+          >
+            <el-option
+              v-for="brand in availableBrands"
+              :key="brand.brand_name"
+              :label="brand.showed_brand_name"
+              :value="brand.brand_name"
+            />
+          </el-select>
+          <div class="form-hint">
+            Type to search or select from available brands
+          </div>
+        </el-form-item>
+        
         <el-form-item label="Prospect Interest (0-5)" prop="prospect_interest">
           <el-rate
             v-model="form.prospect_interest"
@@ -107,9 +134,23 @@
           <el-descriptions-item label="Status">{{ form.status }}</el-descriptions-item>
           <el-descriptions-item label="Email">{{ form.email }}</el-descriptions-item>
           <el-descriptions-item label="Phone">{{ form.phone }}</el-descriptions-item>
-          <el-descriptions-item label="Address">{{ form.address }}, {{ form.city }}, {{ form.country }}</el-descriptions-item>
+          <el-descriptions-item label="Address">{{ form.address }}, {{ form.city }}, {{ form.postal_code }}, {{ form.country }}</el-descriptions-item>
+          <el-descriptions-item label="Brands">
+            <div class="brands-review">
+              <el-tag
+                v-for="brand in form.brands"
+                :key="brand"
+                size="small"
+                style="margin-right: 4px; margin-bottom: 4px;"
+              >
+                {{ getBrandDisplayName(brand) }}
+              </el-tag>
+              <span v-if="!form.brands || form.brands.length === 0">-</span>
+            </div>
+          </el-descriptions-item>
           <el-descriptions-item label="Prospect Interest">{{ form.prospect_interest }}/5</el-descriptions-item>
           <el-descriptions-item label="Commercial Interest">{{ form.commercial_interest }}/5</el-descriptions-item>
+          <el-descriptions-item label="Overall Interest">{{ form.prospect_interest + form.commercial_interest }}/10</el-descriptions-item>
           <el-descriptions-item label="Notes">{{ form.notes || '-' }}</el-descriptions-item>
           <el-descriptions-item label="Favorite">{{ form.favorite ? 'Yes' : 'No' }}</el-descriptions-item>
         </el-descriptions>
@@ -146,6 +187,11 @@ import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { reactive, ref, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 
+interface Brand {
+  brand_name: string
+  showed_brand_name: string
+}
+
 interface Prospect {
   id?: string
   name: string
@@ -156,6 +202,7 @@ interface Prospect {
   email: string
   city: string
   country: string
+  postal_code: string
   address: string
   prospect_interest: number
   commercial_interest: number
@@ -171,6 +218,7 @@ const props = defineProps<{
   visible: boolean
   prospect: Prospect | null
   mode: 'create' | 'edit'
+  availableBrands: Brand[]
 }>()
 
 const emit = defineEmits(['update:visible', 'saved', 'closed'])
@@ -191,6 +239,7 @@ const form = reactive<Prospect>({
   email: '',
   city: '',
   country: '',
+  postal_code: '',
   address: '',
   prospect_interest: 3,
   commercial_interest: 3,
@@ -216,6 +265,11 @@ const rules = reactive<FormRules>({
 })
 
 const visible = ref(props.visible)
+
+const getBrandDisplayName = (brandName: string): string => {
+  const brand = props.availableBrands.find(b => b.brand_name === brandName)
+  return brand ? brand.showed_brand_name : brandName
+}
 
 watch(() => props.visible, (val) => {
   visible.value = val
@@ -248,6 +302,7 @@ const resetForm = () => {
     email: '',
     city: '',
     country: '',
+    postal_code: '',
     address: '',
     prospect_interest: 3,
     commercial_interest: 3,
@@ -283,10 +338,16 @@ const submitForm = async () => {
       submitting.value = true
       await formRef.value.validate()
       
+      const payload = {
+        ...form,
+        // Ensure brands is an array
+        brands: Array.isArray(form.brands) ? form.brands : []
+      }
+      
       if (props.mode === 'create') {
         await axios.post(
           'http://localhost:8000/api/v1/prospect/',
-          form,
+          payload,
           {
             headers: {
               Authorization: `Bearer ${authStore.token}`,
@@ -297,7 +358,7 @@ const submitForm = async () => {
       } else {
         await axios.put(
           `http://localhost:8000/api/v1/prospect/${form.id}`,
-          form,
+          payload,
           {
             headers: {
               Authorization: `Bearer ${authStore.token}`,
@@ -318,3 +379,17 @@ const submitForm = async () => {
   }
 }
 </script>
+
+<style scoped>
+.form-hint {
+  font-size: 12px;
+  color: #909399;
+  margin-top: 4px;
+}
+
+.brands-review {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+</style>

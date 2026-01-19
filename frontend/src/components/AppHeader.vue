@@ -10,7 +10,7 @@
       <h2>I-VISION</h2>
     </div>
     <div class="header-right">
-      <span class="user-info">Welcome, {{ authStore.user?.email }}</span>
+      <span class="user-info">{{ selectedBrandName }}</span>
       <el-button @click="settingsDrawer = true" :icon="Setting" circle />
       <el-button @click="handleLogout" :icon="SwitchButton" circle />
     </div>
@@ -89,13 +89,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { Menu, Setting, SwitchButton } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
+import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
 import { useSettingsStore } from "../stores/settings";
 import { useUIStore } from "../stores/ui";
-import { useRouter } from "vue-router";
-import { Setting, SwitchButton, Menu } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
 
 const authStore = useAuthStore();
 const settingsStore = useSettingsStore();
@@ -139,6 +139,14 @@ const formatDate = (dateString: string) => {
   if (!dateString) return "";
   return new Date(dateString).toLocaleDateString();
 };
+
+const selectedBrandName = computed(() => {
+  const brand = settingsStore.brands.find(
+    (b) => b.brand_name === settingsStore.selectedBrand
+  );
+  return brand ? brand.showed_brand_name : "";
+});
+
 </script>
 
 <style scoped>

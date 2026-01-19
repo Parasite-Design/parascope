@@ -25,6 +25,7 @@ class ProspectBase(BaseModel):
     email: str = Field(..., description="Email address of the prospect")
     city: str = Field(..., description="City of the prospect")
     country: str = Field(..., description="Country of the prospect")
+    postal_code: str = Field(..., description="Postal code of the prospect location")
     address: str = Field(..., description="Address of the prospect")
     prospect_interest: int = Field(
         ..., ge=0, le=5, description="Prospect's interest level (0-5)"
@@ -80,6 +81,9 @@ class ProspectUpdate(BaseModel):
     email: Optional[str] = Field(..., description="Email address of the prospect")
     city: Optional[str] = Field(None, description="City of the prospect")
     country: Optional[str] = Field(None, description="Country of the prospect")
+    postal_code: Optional[str] = Field(
+        ..., description="Postal code of the prospect location"
+    )
     address: Optional[str] = Field(None, description="Address of the prospect")
     prospect_interest: Optional[int] = Field(
         None, ge=0, le=5, description="Prospect's interest level (0-5)"

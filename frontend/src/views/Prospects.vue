@@ -126,7 +126,24 @@
       </el-table-column>
 
       <el-table-column prop="city" label="City" sortable="custom" width="120" />
+      <el-table-column prop="postal_code" label="Postal Code" sortable="custom" width="120" />
       <el-table-column prop="country" label="Country" sortable="custom" width="120" />
+      
+      <el-table-column prop="brands" label="Brands" min-width="180">
+        <template #default="{ row }">
+          <div class="brands-display">
+            <el-tag
+              v-for="brand in row.brands"
+              :key="brand"
+              size="small"
+              style="margin-right: 4px; margin-bottom: 4px;"
+            >
+              {{ getBrandDisplayName(brand) }}
+            </el-tag>
+            <span v-if="!row.brands || row.brands.length === 0">-</span>
+          </div>
+        </template>
+      </el-table-column>
       
       <el-table-column prop="next_visit" label="Next Visit" sortable="custom" width="140">
         <template #default="{ row }">
@@ -178,6 +195,7 @@
     <prospect-detail
       v-model:visible="detailVisible"
       :prospect="selectedProspect"
+      :available-brands="availableBrands"
       @update-prospect="editProspect"
     />
 
@@ -186,6 +204,7 @@
       v-model:visible="formVisible"
       :prospect="editingProspect"
       :mode="formMode"
+      :available-brands="availableBrands"
       @saved="handleProspectSaved"
       @closed="handleFormClosed"
     />
@@ -202,6 +221,11 @@ import ProspectForm from '../components/ProspectForm.vue'
 import { useAuthStore } from '../stores/auth'
 import { useSettingsStore } from '../stores/settings'
 
+interface Brand {
+  brand_name: string
+  showed_brand_name: string
+}
+
 interface Prospect {
   id: string
   name: string
@@ -212,6 +236,7 @@ interface Prospect {
   email: string
   city: string
   country: string
+  postal_code: string
   address: string
   prospect_interest: number
   commercial_interest: number
@@ -230,9 +255,11 @@ const authStore = useAuthStore()
 const settingsStore = useSettingsStore()
 
 const prospects = ref<Prospect[]>([])
+const availableBrands = ref<Brand[]>([])
 const loading = ref(false)
 const searchQuery = ref('')
 const statusFilter = ref('')
+const brandFilter = ref('')
 const favoriteFilter = ref('')
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -254,14 +281,33 @@ const statusTagType = (status: string) => {
     'Pending': 'warning',
     'Lost': 'danger',
     'Converted': 'success',
-    'Ready': 'success', // Changed from empty string to 'success'
+    'Ready': 'success',
     'Blocked': 'danger'
   }
-  return types[status] || 'info' // Default to 'info' if status not found
+  return types[status] || 'info'
 }
 
-watch([searchQuery, statusFilter, favoriteFilter], () => {
-  currentPage.value = 1 // Reset to first page when filters change
+const getBrandDisplayName = (brandName: string): string => {
+  const brand = availableBrands.value.find(b => b.brand_name === brandName)
+  return brand ? brand.showed_brand_name : brandName
+}
+
+const fetchAvailableBrands = async () => {
+  try {
+    const response = await axios.get('http://localhost:8000/api/v1/settings/brand', {
+      headers: {
+        Authorization: `Bearer ${authStore.token}`
+      }
+    })
+    availableBrands.value = response.data
+  } catch (error) {
+    console.error('Failed to fetch brands:', error)
+    ElMessage.error('Failed to load available brands')
+  }
+}
+
+watch([searchQuery, statusFilter, brandFilter, favoriteFilter], () => {
+  currentPage.value = 1
   fetchProspects()
 })
 
@@ -283,6 +329,11 @@ const fetchProspects = async () => {
     // Add status filter
     if (statusFilter.value) {
       params.append('status', statusFilter.value)
+    }
+    
+    // Add brand filter
+    if (brandFilter.value) {
+      params.append('brands', brandFilter.value)
     }
     
     // Add favorite filter
@@ -307,7 +358,6 @@ const fetchProspects = async () => {
       }
     })
     
-    // Handle both response formats (array or object with items)
     if (Array.isArray(response.data)) {
       prospects.value = response.data
       totalCount.value = response.data.length
@@ -363,7 +413,6 @@ const toggleFavorite = async (prospect: Prospect) => {
       }
     )
     
-    // Update local state
     prospect.favorite = !prospect.favorite
     ElMessage.success(prospect.favorite ? 'Added to favorites' : 'Removed from favorites')
   } catch (error) {
@@ -406,7 +455,6 @@ const deleteProspect = async (prospect: Prospect) => {
 
 const locateProspect = (prospect: Prospect) => {
   if (prospect.latitude && prospect.longitude) {
-    // Open in Google Maps or other mapping service
     window.open(`https://www.google.com/maps?q=${prospect.latitude},${prospect.longitude}`, '_blank')
   } else {
     ElMessage.warning('No location data available for this prospect')
@@ -461,6 +509,7 @@ const formatDate = (dateString: string | null) => {
 }
 
 onMounted(() => {
+  fetchAvailableBrands()
   fetchProspects()
 })
 </script>
@@ -503,6 +552,11 @@ onMounted(() => {
 
 .danger-item {
   color: #f56c6c;
+}
+
+.brands-display {
+  display: flex;
+  flex-wrap: wrap;
 }
 
 :deep(.el-table .cell) {
