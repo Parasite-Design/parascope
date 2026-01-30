@@ -197,12 +197,11 @@
 
 <script setup lang="ts">
 import { Search, Star, StarFilled } from '@element-plus/icons-vue'
-import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { onMounted, ref, watch } from 'vue'
 import CustomerDetail from '../components/CustomerDetail.vue'
 import CustomerEdit from '../components/CustomerEdit.vue'
-import { useAuthStore } from '../stores/auth'
+import { api, useAuthStore } from '../stores/auth'
 import { useSettingsStore } from '../stores/settings'
 
 interface Customer {
@@ -355,7 +354,7 @@ const fetchCustomers = async () => {
 
     const url = `http://localhost:8000/api/v1/customers/?period1_start=${period1Start}&period1_end=${period1End}&period2_start=${period2Start}&period2_end=${period2End}`
 
-    const response = await axios.get(url, {
+    const response = await api.get(url, {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
@@ -473,7 +472,7 @@ const editCustomer = (customer: Customer) => {
 const toggleFavorite = async (customer: Customer) => {
   try {
     const updatedCustomer = { favorite: !customer.favorite }
-    await axios.put(
+    await api.put(
       `http://localhost:8000/api/v1/customers/${customer._id}`,
       updatedCustomer,
       {

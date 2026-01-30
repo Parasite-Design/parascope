@@ -1,7 +1,6 @@
-import axios from 'axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { useAuthStore } from './auth'
+import { api, useAuthStore } from './auth'
 
 interface Brand {
   brand_name: string
@@ -25,7 +24,7 @@ export const useSettingsStore = defineStore('settings', () => {
   
   const fetchBrands = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/v1/settings/brand', {
+      const response = await api.get('http://localhost:8000/api/v1/settings/brand', {
         headers: {
           Authorization: `Bearer ${authStore.token}`
         }
@@ -43,7 +42,7 @@ export const useSettingsStore = defineStore('settings', () => {
         ? '/api/v1/dates/rolling-year' 
         : `/api/v1/dates/n/${periodType === 'fiscal' ? -1 : 0}`
       
-      const response = await axios.get(`http://localhost:8000${endpoint}`, {
+      const response = await api.get(`http://localhost:8000${endpoint}`, {
         headers: {
           Authorization: `Bearer ${authStore.token}`
         }

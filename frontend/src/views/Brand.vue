@@ -110,10 +110,9 @@
 
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import axios from 'axios'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
 import { nextTick, onMounted, reactive, ref } from 'vue'
-import { useAuthStore } from '../stores/auth'
+import { api, useAuthStore } from '../stores/auth'
 
 interface Brand {
   brand_name: string
@@ -150,7 +149,7 @@ const formRules: FormRules = {
 // Check if user is admin
 const checkAdminStatus = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/v1/is-admin', {
+    const response = await api.get('http://localhost:8000/api/v1/is-admin', {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
@@ -172,7 +171,7 @@ const checkAdminStatus = async () => {
 const fetchBrands = async () => {
   loading.value = true
   try {
-    const response = await axios.get('http://localhost:8000/api/v1/settings/brand')
+    const response = await api.get('http://localhost:8000/api/v1/settings/brand')
     brands.value = response.data
     filteredBrands.value = response.data
   } catch (error) {
@@ -217,7 +216,7 @@ const submitForm = async () => {
     submitting.value = true
     try {
       if (formMode.value === 'create') {
-        await axios.post(
+        await api.post(
           'http://localhost:8000/api/v1/settings/brand',
           {
             brand_name: formData.brand_name,
@@ -262,7 +261,7 @@ const deleteBrand = async (brand: Brand) => {
       }
     )
     
-    await axios.delete(
+    await api.delete(
       `http://localhost:8000/api/v1/settings/brand/${brand.brand_name}`,
       {
         headers: {

@@ -213,12 +213,11 @@
 
 <script setup lang="ts">
 import { Delete, Edit, Location, Search, Star, StarFilled } from '@element-plus/icons-vue'
-import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, ref, watch } from 'vue'
 import ProspectDetail from '../components/ProspectDetail.vue'
 import ProspectForm from '../components/ProspectForm.vue'
-import { useAuthStore } from '../stores/auth'
+import { api, useAuthStore } from '../stores/auth'
 import { useSettingsStore } from '../stores/settings'
 
 interface Brand {
@@ -294,7 +293,7 @@ const getBrandDisplayName = (brandName: string): string => {
 
 const fetchAvailableBrands = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/v1/settings/brand', {
+    const response = await api.get('http://localhost:8000/api/v1/settings/brand', {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
@@ -352,7 +351,7 @@ const fetchProspects = async () => {
     
     const url = `http://localhost:8000/api/v1/prospect/?${params.toString()}`
     
-    const response = await axios.get(url, {
+    const response = await api.get(url, {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
@@ -402,7 +401,7 @@ const editProspect = (prospect: Prospect) => {
 const toggleFavorite = async (prospect: Prospect) => {
   try {
     const updatedProspect = { ...prospect, favorite: !prospect.favorite }
-    await axios.put(
+    await api.put(
       `http://localhost:8000/api/v1/prospect/${prospect.id}`,
       updatedProspect,
       {
@@ -434,7 +433,7 @@ const deleteProspect = async (prospect: Prospect) => {
       }
     )
     
-    await axios.delete(
+    await api.delete(
       `http://localhost:8000/api/v1/prospect/${prospect.id}`,
       {
         headers: {
@@ -463,7 +462,7 @@ const locateProspect = (prospect: Prospect) => {
 
 const exportToCSV = async () => {
   try {
-    const response = await axios.get(
+    const response = await api.get(
       'http://localhost:8000/api/v1/prospect/export/csv',
       {
         headers: {

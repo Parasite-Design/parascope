@@ -96,12 +96,11 @@
 
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
-import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import CustomerDetail from '../components/CustomerDetail.vue'
 import CustomerEdit from '../components/CustomerEdit.vue'
-import { useAuthStore } from '../stores/auth'
+import { api, useAuthStore } from '../stores/auth'
 import { useSettingsStore } from '../stores/settings'
 
 // Import Leaflet for mapping
@@ -219,10 +218,11 @@ const initializeMap = () => {
 }
 
 const updateMapMarkers = () => {
-  if (!map || !markers) return
+  const currentMarkers = markers
+  if (!map || !currentMarkers) return
 
   // Clear existing markers
-  markers.clearLayers()
+  currentMarkers.clearLayers()
 
   // Add markers for filtered customers with valid coordinates
   filteredCustomers.value.forEach(customer => {
@@ -270,13 +270,13 @@ const updateMapMarkers = () => {
       showCustomerDetails(customer)
     })
 
-    markers.addLayer(marker)
+    currentMarkers.addLayer(marker)
   })
 
   // Fit map to show all markers
   if (filteredCustomers.value.length > 0) {
     const markerGroup = new L.FeatureGroup()
-    markers.eachLayer((layer: any) => {
+    currentMarkers.eachLayer((layer: any) => {
       markerGroup.addLayer(layer)
     })
     map.fitBounds(markerGroup.getBounds().pad(0.1))
@@ -322,7 +322,7 @@ const fetchCustomers = async () => {
 
     const url = `http://localhost:8000/api/v1/customers/?period1_start=${period1Start}&period1_end=${period1End}&period2_start=${period2Start}&period2_end=${period2End}`
 
-    const response = await axios.get(url, {
+    const response = await api.get(url, {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }

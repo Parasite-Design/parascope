@@ -182,10 +182,9 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { reactive, ref, watch } from 'vue'
-import { useAuthStore } from '../stores/auth'
+import { api, useAuthStore } from '../stores/auth'
 
 interface Brand {
   brand_name: string
@@ -345,7 +344,7 @@ const submitForm = async () => {
       }
       
       if (props.mode === 'create') {
-        await axios.post(
+        await api.post(
           'http://localhost:8000/api/v1/prospect/',
           payload,
           {
@@ -356,7 +355,7 @@ const submitForm = async () => {
           }
         )
       } else {
-        await axios.put(
+        await api.put(
           `http://localhost:8000/api/v1/prospect/${form.id}`,
           payload,
           {

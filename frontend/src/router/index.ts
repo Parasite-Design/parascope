@@ -76,27 +76,29 @@ router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
   
   if (to.meta.requiresAuth) {
-    // Check if we have a token
     if (!authStore.token) {
       next('/login')
       return
     }
     
-    // Use the API to validate token
-    // The interceptor will handle refresh automatically
     try {
-      // Use your existing axios instance (api) which has the interceptor
       await axios.get('/api/v1/validate')
       next()
     } catch (error) {
-      // If error is still 401 after interceptor tried to refresh, logout
-      if (error.response?.status === 401) {
-        await authStore.logout()
-        next('/login')
+      // Type guard to check if it's an AxiosError
+      if (axios.isAxiosError(error)) {
+        // Now TypeScript knows this is an AxiosError
+        if (error.response?.status === 401) {
+          await authStore.logout()
+          next('/login')
+        } else {
+          console.error('Validation error:', error)
+          next()
+        }
       } else {
-        // For other errors, you might want to handle differently
-        console.error('Validation error:', error)
-        next() // Or handle error appropriately
+        // Handle non-Axios errors
+        console.error('Unexpected error:', error)
+        next('/login')
       }
     }
   } else {

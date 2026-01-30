@@ -369,10 +369,9 @@
 
 <script setup lang="ts">
 import { Warning } from '@element-plus/icons-vue'
-import axios from 'axios'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
 import { computed, onMounted, reactive, ref } from 'vue'
-import { useAuthStore } from '../stores/auth'
+import { api, useAuthStore } from '../stores/auth'
 
 interface User {
   id: string
@@ -555,7 +554,7 @@ const fetchUsers = async () => {
   
   loadingUsers.value = true
   try {
-    const response = await axios.get('http://localhost:8000/api/v1/users', {
+    const response = await api.get('http://localhost:8000/api/v1/users', {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
@@ -571,7 +570,7 @@ const fetchUsers = async () => {
 
 const fetchRepresentatives = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/v1/rep/all', {
+    const response = await api.get('http://localhost:8000/api/v1/rep/all', {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
@@ -615,7 +614,7 @@ const submitChangePassword = async () => {
     
     changingPassword.value = true
     try {
-      await axios.post(
+      await api.post(
         'http://localhost:8000/api/v1/change-password',
         {
           current_password: changePasswordForm.current_password,
@@ -674,7 +673,7 @@ const submitCreateUser = async () => {
     
     creatingUser.value = true
     try {
-      await axios.post(
+      await api.post(
         'http://localhost:8000/api/v1/register',
         {
           email: createUserForm.email,
@@ -728,7 +727,7 @@ const submitResetPassword = async () => {
     
     resettingPassword.value = true
     try {
-      await axios.post(
+      await api.post(
         'http://localhost:8000/api/v1/reset-password',
         {
           user_id: resetPasswordUser.value?.id,
@@ -802,7 +801,7 @@ const deleteAccount = async (userId?: string) => {
   try {
     const params = userId ? { user_id: userId } : {}
     
-    await axios.delete('http://localhost:8000/api/v1/delete-account', {
+    await api.delete('http://localhost:8000/api/v1/delete-account', {
       headers: {
         Authorization: `Bearer ${authStore.token}`,
         'Content-Type': 'application/json'

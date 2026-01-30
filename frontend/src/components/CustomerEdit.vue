@@ -74,10 +74,9 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { reactive, ref, watch } from 'vue'
-import { useAuthStore } from '../stores/auth'
+import { api, useAuthStore } from '../stores/auth'
 
 interface Customer {
   _id?: string
@@ -220,7 +219,7 @@ const submitForm = async () => {
         note: form.note
       }
 
-      await axios.put(
+      await api.put(
         `http://localhost:8000/api/v1/customers/${props.customer._id}`,
         updateData,
         {

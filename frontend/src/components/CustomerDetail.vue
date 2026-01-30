@@ -265,10 +265,9 @@
 
 <script setup lang="ts">
 import { Edit, MapLocation, Plus, Star, StarFilled, View } from '@element-plus/icons-vue'
-import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { computed, ref, watch } from 'vue'
-import { useAuthStore } from '../stores/auth'
+import { api, useAuthStore } from '../stores/auth'
 import { useSettingsStore } from '../stores/settings'
 import SalesChart from './SalesChart.vue'
 
@@ -412,7 +411,7 @@ const fetchCustomerDetails = async () => {
     const periodStart = settingsStore.period.period_start
     const periodEnd = settingsStore.period.period_end
     
-    const response = await axios.get(
+    const response = await api.get(
       `http://localhost:8000/api/v1/customers/${props.customer._id}?month_interval=${chartPeriod.value}&period_start=${periodStart}&period_end=${periodEnd}`,
       {
         headers: {
@@ -529,7 +528,7 @@ const editNotes = async () => {
     
     // Update notes via API
     const updatedCustomer = { note: value }
-    await axios.put(
+    await api.put(
       `http://localhost:8000/api/v1/customers/${props.customer._id}`,
       updatedCustomer,
       {
@@ -563,7 +562,7 @@ const toggleFavorite = async () => {
   
   try {
     const updatedCustomer = { favorite: !props.customer.favorite }
-    await axios.put(
+    await api.put(
       `http://localhost:8000/api/v1/customers/${props.customer._id}`,
       updatedCustomer,
       {

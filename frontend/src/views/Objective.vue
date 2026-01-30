@@ -43,7 +43,7 @@
                     class="objective-item"
                   >
                     <div class="objective-header">
-                      <strong>{{ getBrandDisplayName(brandName) }}</strong>
+                      <strong>{{ getBrandDisplayName(String(brandName)) }}</strong>
                     </div>
                     <div class="objective-details">
                       <div v-if="brandObj.salesPerCustomer" class="objective-detail">
@@ -177,10 +177,9 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { useAuthStore } from '../stores/auth'
+import { api, useAuthStore } from '../stores/auth'
 
 interface Representative {
   id: string
@@ -268,7 +267,7 @@ const availableBrands = computed(() => {
 // Check if user is admin
 const checkAdminStatus = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/v1/is-admin', {
+    const response = await api.get('http://localhost:8000/api/v1/is-admin', {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
@@ -289,7 +288,7 @@ const checkAdminStatus = async () => {
 const fetchRepresentatives = async () => {
   loading.value = true
   try {
-    const response = await axios.get('http://localhost:8000/api/v1/rep/all', {
+    const response = await api.get('http://localhost:8000/api/v1/rep/all', {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
@@ -309,7 +308,7 @@ const fetchRepresentatives = async () => {
 
 const fetchBrands = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/v1/settings/brand')
+    const response = await api.get('http://localhost:8000/api/v1/settings/brand')
     brands.value = response.data
   } catch (error) {
     console.error('Failed to fetch brands:', error)
@@ -376,7 +375,7 @@ const confirmDeleteObjective = async (rep: Representative, brandName: string, ty
 
 const deleteObjective = async (repId: string, brandName: string, type: 'salesPerCustomer' | 'activeCustomers') => {
   try {
-    await axios.delete('http://localhost:8000/api/v1/settings/objective', {
+    await api.delete('http://localhost:8000/api/v1/settings/objective', {
       headers: {
         Authorization: `Bearer ${authStore.token}`,
         'Content-Type': 'application/json'
@@ -460,7 +459,7 @@ const submitForm = async () => {
         payload.original_type = editingContext.value.type
       }
       
-      await axios.post(
+      await api.post(
         'http://localhost:8000/api/v1/settings/objective',
         payload,
         {

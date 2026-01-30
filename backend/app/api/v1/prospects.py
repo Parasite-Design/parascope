@@ -33,6 +33,7 @@ VALID_SORT_FIELDS = [
     "email",
     "phone",
     "city",
+    "postal_code",
     "country",
     "prospect_interest",
     "commercial_interest",

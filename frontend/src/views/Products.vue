@@ -24,7 +24,7 @@
             <el-icon><TrendCharts /></el-icon>
           </div>
           <div class="card-stats">
-            <div class="stat-value">${{ formatNumber(totalSales) }}</div>
+            <div class="stat-value">{{ formatNumber(totalSales) }}€</div>
             <div class="stat-label">Total Sales</div>
           </div>
         </div>
@@ -36,7 +36,7 @@
             <el-icon><User /></el-icon>
           </div>
           <div class="card-stats">
-            <div class="stat-value">${{ formatNumber(myTotalSales) }}</div>
+            <div class="stat-value">{{ formatNumber(myTotalSales) }}€</div>
             <div class="stat-label">My Sales</div>
           </div>
         </div>
@@ -48,7 +48,7 @@
             <el-icon><Monitor /></el-icon>
           </div>
           <div class="card-stats">
-            <div class="stat-value">${{ formatNumber(webTotalSales) }}</div>
+            <div class="stat-value">{{ formatNumber(webTotalSales) }}€</div>
             <div class="stat-label">Web Sales</div>
           </div>
         </div>
@@ -96,7 +96,7 @@
               :color="getBrandColor(brand.brand_name)"
             />
             <div class="brand-amount">
-              ${{ formatNumber(brand.amount) }}
+              {{ formatNumber(brand.amount) }}€
             </div>
           </div>
         </div>
@@ -157,7 +157,7 @@
 
         <el-table-column prop="total" label="Total Revenue" sortable="custom" width="140" align="right">
           <template #default="{ row }">
-            <span class="revenue">${{ formatNumber(row.total) }}</span>
+            <span class="revenue">{{ formatNumber(row.total) }}€</span>
           </template>
         </el-table-column>
 
@@ -169,7 +169,7 @@
 
         <el-table-column prop="my_total" label="My Revenue" sortable="custom" width="130" align="right">
           <template #default="{ row }">
-            <span class="my-revenue">${{ formatNumber(row.my_total) }}</span>
+            <span class="my-revenue">{{ formatNumber(row.my_total) }}€</span>
           </template>
         </el-table-column>
 
@@ -181,7 +181,7 @@
 
         <el-table-column prop="web_total" label="Web Revenue" sortable="custom" width="130" align="right">
           <template #default="{ row }">
-            ${{ formatNumber(row.web_total) }}
+            {{ formatNumber(row.web_total) }}€
           </template>
         </el-table-column>
 
@@ -193,7 +193,7 @@
 
         <el-table-column prop="my_web_total" label="My Web Revenue" sortable="custom" width="140" align="right">
           <template #default="{ row }">
-            ${{ formatNumber(row.my_web_total) }}
+            {{ formatNumber(row.my_web_total) }}€
           </template>
         </el-table-column>
 
@@ -209,10 +209,9 @@
 
 <script setup lang="ts">
 import { Box, Monitor, Search, TrendCharts, User } from '@element-plus/icons-vue'
-import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { computed, onMounted, ref, watch } from 'vue'
-import { useAuthStore } from '../stores/auth'
+import { api, useAuthStore } from '../stores/auth'
 import { useSettingsStore } from '../stores/settings'
 
 interface Product {
@@ -370,7 +369,7 @@ const fetchProducts = async () => {
     
     const url = `http://localhost:8000/api/v1/products/?${params.toString()}`
     
-    const response = await axios.get(url, {
+    const response = await api.get(url, {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
@@ -387,7 +386,7 @@ const fetchProducts = async () => {
 
 const fetchBrands = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/v1/settings/brand', {
+    const response = await api.get('http://localhost:8000/api/v1/settings/brand', {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }

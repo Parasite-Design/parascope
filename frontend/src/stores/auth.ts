@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 import { useSettingsStore } from "../stores/settings";
 
 // Create axios instance with base configuration
-const api = axios.create({
+export const api = axios.create({
   baseURL: 'http://localhost:8000',
 })
 

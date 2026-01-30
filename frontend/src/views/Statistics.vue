@@ -217,9 +217,8 @@
 
 <script setup lang="ts">
 import { InfoFilled, Loading } from '@element-plus/icons-vue'
-import axios from 'axios'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { useAuthStore } from '../stores/auth'
+import { api, useAuthStore } from '../stores/auth'
 import { useSettingsStore } from '../stores/settings'
 
 interface StatisticsData {
@@ -404,7 +403,7 @@ const fetchAllData = async () => {
 // Fetch brands for display names
 const fetchBrands = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/v1/settings/brand')
+    const response = await api.get('http://localhost:8000/api/v1/settings/brand')
     brands.value = response.data
   } catch (error) {
     console.error('Failed to fetch brands:', error)
@@ -414,7 +413,7 @@ const fetchBrands = async () => {
 // Fetch representative data for objectives
 const fetchRepresentativeData = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/v1/rep/', {
+    const response = await api.get('http://localhost:8000/api/v1/rep/', {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
@@ -439,7 +438,7 @@ const fetchStatisticsData = async () => {
   
   try {
     // Fetch sales data
-    const salesResponse = await axios.get('http://localhost:8000/api/v1/statistics/sales', {
+    const salesResponse = await api.get('http://localhost:8000/api/v1/statistics/sales', {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       },
@@ -447,7 +446,7 @@ const fetchStatisticsData = async () => {
     })
     
     // Fetch customers data
-    const customersResponse = await axios.get('http://localhost:8000/api/v1/statistics/customers', {
+    const customersResponse = await api.get('http://localhost:8000/api/v1/statistics/customers', {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       },
