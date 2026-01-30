@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="home-container">
     <h1>Welcome to the Dashboard</h1>
@@ -35,7 +36,7 @@ const settingsStore = useSettingsStore();
 
 const selectedBrandName = computed(() => {
   const brand = settingsStore.brands.find(
-    (b) => b.brand_name === settingsStore.selectedBrand
+    (b) => b.brand_name === settingsStore.selectedBrand,
   );
   return brand ? brand.showed_brand_name : "";
 });

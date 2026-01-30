@@ -74,141 +74,146 @@
 </template>
 
 <script setup lang="ts">
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { reactive, ref, watch } from 'vue'
-import { api, useAuthStore } from '../stores/auth'
+import { ElMessage, type FormInstance, type FormRules } from "element-plus";
+import { reactive, ref, watch } from "vue";
+import { api } from "../stores/auth";
 
 interface Customer {
-  _id?: string
-  code: string
-  city: string
-  latitude: string
-  longitude: string
-  name: string
-  phone: string
-  period1_total: number
-  period1_count: number
-  period2_total: number
-  objective: number
-  visits_count: number
-  favorite: boolean
-  active: boolean
-  period_progress: number
-  objective_progress: number
-  last_visit: string | null
-  note?: string
+  _id?: string;
+  code: string;
+  city: string;
+  latitude: string;
+  longitude: string;
+  name: string;
+  phone: string;
+  period1_total: number;
+  period1_count: number;
+  period2_total: number;
+  objective: number;
+  visits_count: number;
+  favorite: boolean;
+  active: boolean;
+  period_progress: number;
+  objective_progress: number;
+  last_visit: string | null;
+  note?: string;
 }
 
 interface Props {
-  visible: boolean
-  customer?: Customer | null
+  visible: boolean;
+  customer?: Customer | null;
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits(['update:visible', 'customer-updated'])
+const props = defineProps<Props>();
+const emit = defineEmits(["update:visible", "customer-updated"]);
 
-const authStore = useAuthStore()
-const formRef = ref<FormInstance>()
-const loading = ref(false)
-const visible = ref(props.visible)
+const formRef = ref<FormInstance>();
+const loading = ref(false);
+const visible = ref(props.visible);
 
 // Display-only fields (readonly)
-const customerCode = ref('')
-const customerName = ref('')
-const customerCity = ref('')
-const customerPhone = ref('')
+const customerCode = ref("");
+const customerName = ref("");
+const customerCity = ref("");
+const customerPhone = ref("");
 
 // Editable fields
 const form = reactive({
   objective: 0,
   visits_count: 0,
   favorite: false,
-  note: ''
-})
+  note: "",
+});
 
 const rules: FormRules = {
   objective: [
-    { 
-      type: 'number', 
-      min: 0, 
-      message: 'Objective must be a positive number', 
-      trigger: 'blur' 
-    }
+    {
+      type: "number",
+      min: 0,
+      message: "Objective must be a positive number",
+      trigger: "blur",
+    },
   ],
   visits_count: [
-    { 
-      type: 'number', 
-      min: 0, 
-      message: 'Visits count must be a positive number', 
-      trigger: 'blur' 
-    }
+    {
+      type: "number",
+      min: 0,
+      message: "Visits count must be a positive number",
+      trigger: "blur",
+    },
   ],
   note: [
-    { 
-      max: 500, 
-      message: 'Notes cannot exceed 500 characters', 
-      trigger: 'blur' 
-    }
-  ]
-}
+    {
+      max: 500,
+      message: "Notes cannot exceed 500 characters",
+      trigger: "blur",
+    },
+  ],
+};
 
 // Initialize form when customer changes
-watch(() => props.customer, (customer) => {
-  if (customer) {
-    // Set display fields
-    customerCode.value = customer.code || ''
-    customerName.value = customer.name || ''
-    customerCity.value = customer.city || ''
-    customerPhone.value = customer.phone || ''
-    
-    // Set editable fields
-    Object.assign(form, {
-      objective: customer.objective || 0,
-      visits_count: customer.visits_count || 0,
-      favorite: customer.favorite || false,
-      note: customer.note || ''
-    })
-  } else {
-    // Reset form
-    resetForm()
-  }
-})
+watch(
+  () => props.customer,
+  (customer) => {
+    if (customer) {
+      // Set display fields
+      customerCode.value = customer.code || "";
+      customerName.value = customer.name || "";
+      customerCity.value = customer.city || "";
+      customerPhone.value = customer.phone || "";
 
-watch(() => props.visible, (val) => {
-  visible.value = val
-})
+      // Set editable fields
+      Object.assign(form, {
+        objective: customer.objective || 0,
+        visits_count: customer.visits_count || 0,
+        favorite: customer.favorite || false,
+        note: customer.note || "",
+      });
+    } else {
+      // Reset form
+      resetForm();
+    }
+  },
+);
+
+watch(
+  () => props.visible,
+  (val) => {
+    visible.value = val;
+  },
+);
 
 watch(visible, (val) => {
-  emit('update:visible', val)
-})
+  emit("update:visible", val);
+});
 
 const resetForm = () => {
-  customerCode.value = ''
-  customerName.value = ''
-  customerCity.value = ''
-  customerPhone.value = ''
-  
+  customerCode.value = "";
+  customerName.value = "";
+  customerCity.value = "";
+  customerPhone.value = "";
+
   Object.assign(form, {
     objective: 0,
     visits_count: 0,
     favorite: false,
-    note: ''
-  })
-  formRef.value?.clearValidate()
-}
+    note: "",
+  });
+  formRef.value?.clearValidate();
+};
 
 const handleClose = () => {
-  visible.value = false
-  resetForm()
-}
+  visible.value = false;
+  resetForm();
+};
 
 const submitForm = async () => {
-  if (!formRef.value) return
+  if (!formRef.value) return;
 
-  const valid = await formRef.value.validate().catch(() => false)
-  if (!valid) return
+  const valid = await formRef.value.validate().catch(() => false);
+  if (!valid) return;
 
-  loading.value = true
+  loading.value = true;
   try {
     if (props.customer?._id) {
       // Only send allowed fields to the API
@@ -216,28 +221,26 @@ const submitForm = async () => {
         objective: form.objective,
         visits_count: form.visits_count,
         favorite: form.favorite,
-        note: form.note
-      }
+        note: form.note,
+      };
 
-      await api.put(
-        `/api/v1/customers/${props.customer._id}`,
-        updateData
-      )
-      ElMessage.success('Customer updated successfully')
-      
-      emit('customer-updated')
-      handleClose()
+      await api.put(`/api/v1/customers/${props.customer._id}`, updateData);
+      ElMessage.success("Customer updated successfully");
+
+      emit("customer-updated");
+      handleClose();
     } else {
-      ElMessage.error('No customer selected for editing')
+      ElMessage.error("No customer selected for editing");
     }
   } catch (error: any) {
-    console.error('Failed to update customer:', error)
-    const errorMessage = error.response?.data?.message || 'Failed to update customer'
-    ElMessage.error(errorMessage)
+    console.error("Failed to update customer:", error);
+    const errorMessage =
+      error.response?.data?.message || "Failed to update customer";
+    ElMessage.error(errorMessage);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 </script>
 
 <style scoped>

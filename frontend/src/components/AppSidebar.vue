@@ -26,7 +26,7 @@
             <span>Prospects</span>
           </template>
         </el-menu-item>
-          
+
         <!-- Customers -->
         <el-menu-item index="/customers">
           <el-icon><Avatar /></el-icon>
@@ -69,7 +69,6 @@
             >Update Objective</el-menu-item
           >
         </el-sub-menu>
-
       </el-menu>
     </el-scrollbar>
 
@@ -90,15 +89,13 @@ import {
   House,
   Lock,
   ShoppingBag,
-  User
+  User,
 } from "@element-plus/icons-vue";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import { useAuthStore } from "../stores/auth";
 import { useUIStore } from "../stores/ui";
 
 const route = useRoute();
-const authStore = useAuthStore();
 const uiStore = useUIStore();
 
 const activeMenu = computed(() => {

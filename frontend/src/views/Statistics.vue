@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="statistics-container">
     <div class="page-header">
@@ -20,25 +21,28 @@
           <div class="filter-item">
             <span class="filter-label">Time Period:</span>
             <el-tag type="info" size="large">
-              {{ settingsStore.period.period_start }} to {{ settingsStore.period.period_end }}
+              {{ settingsStore.period.period_start }} to
+              {{ settingsStore.period.period_end }}
             </el-tag>
             <span class="filter-help">Set in global settings</span>
           </div>
           <div class="filter-item">
             <span class="filter-label">Selected Brand:</span>
-            <el-tag v-if="settingsStore.selectedBrand" type="primary" size="large">
+            <el-tag
+              v-if="settingsStore.selectedBrand"
+              type="primary"
+              size="large"
+            >
               {{ getBrandDisplayName(settingsStore.selectedBrand) }}
             </el-tag>
-            <el-tag v-else type="info" size="large">
-              All Brands
-            </el-tag>
+            <el-tag v-else type="info" size="large"> All Brands </el-tag>
           </div>
         </div>
         <div class="data-status">
-          <el-alert 
-            v-if="fetchError" 
-            :title="fetchError" 
-            type="error" 
+          <el-alert
+            v-if="fetchError"
+            :title="fetchError"
+            type="error"
             :closable="false"
             show-icon
           />
@@ -66,14 +70,18 @@
             <span class="objective-label">Sales per Customer:</span>
             <span class="objective-value">
               {{ formatCurrency(salesPerCustomerObjective) }}
-              <span class="objective-context">({{ objectiveBrandContext }})</span>
+              <span class="objective-context"
+                >({{ objectiveBrandContext }})</span
+              >
             </span>
           </div>
           <div class="objective-item">
             <span class="objective-label">Active Customers:</span>
             <span class="objective-value">
               {{ activeCustomersObjective.toLocaleString() }}
-              <span class="objective-context">({{ objectiveBrandContext }})</span>
+              <span class="objective-context"
+                >({{ objectiveBrandContext }})</span
+              >
             </span>
           </div>
         </div>
@@ -100,7 +108,9 @@
           <div v-if="hasSalesObjective" class="stat-comparison">
             <div class="comparison-item">
               <span class="comparison-label">Objective:</span>
-              <span class="comparison-value">{{ formatCurrency(salesObjective) }}</span>
+              <span class="comparison-value">{{
+                formatCurrency(salesObjective)
+              }}</span>
             </div>
             <div class="comparison-item">
               <span class="comparison-label">Remaining:</span>
@@ -131,7 +141,9 @@
           <div class="stat-details">
             <div class="detail-item">
               <span class="detail-label">Average Price:</span>
-              <span class="detail-value">{{ formatCurrency(statsData.average_price) }}</span>
+              <span class="detail-value">{{
+                formatCurrency(statsData.average_price)
+              }}</span>
             </div>
           </div>
         </div>
@@ -147,23 +159,32 @@
         <div class="stat-content">
           <div class="channel-row">
             <div class="channel-item">
-              <div class="channel-value">{{ formatCurrency(statsData.web_sales) }}</div>
+              <div class="channel-value">
+                {{ formatCurrency(statsData.web_sales) }}
+              </div>
               <div class="channel-label">Web Sales</div>
               <div class="channel-percentage">
                 {{ calculatePercentage(statsData.web_sales, statsData.sales) }}%
               </div>
             </div>
             <div class="channel-item">
-              <div class="channel-value">{{ formatCurrency(statsData.direct_sales) }}</div>
+              <div class="channel-value">
+                {{ formatCurrency(statsData.direct_sales) }}
+              </div>
               <div class="channel-label">Direct Sales</div>
               <div class="channel-percentage">
-                {{ calculatePercentage(statsData.direct_sales, statsData.sales) }}%
+                {{
+                  calculatePercentage(statsData.direct_sales, statsData.sales)
+                }}%
               </div>
             </div>
           </div>
           <div class="channel-row">
             <div class="channel-item returns-item">
-              <div class="channel-value" :class="{ 'negative': statsData.return < 0 }">
+              <div
+                class="channel-value"
+                :class="{ negative: statsData.return < 0 }"
+              >
                 {{ formatCurrency(statsData.return) }}
               </div>
               <div class="channel-label">Returns</div>
@@ -185,18 +206,24 @@
         <div class="stat-content">
           <div class="customer-main">
             <div class="customer-group">
-              <div class="customer-value">{{ statsData.customers.toLocaleString() }}</div>
+              <div class="customer-value">
+                {{ statsData.customers.toLocaleString() }}
+              </div>
               <div class="customer-label">Total Customers</div>
             </div>
             <div class="customer-group">
-              <div class="customer-value">{{ statsData.active_customers.toLocaleString() }}</div>
+              <div class="customer-value">
+                {{ statsData.active_customers.toLocaleString() }}
+              </div>
               <div class="customer-label">Active Customers</div>
             </div>
           </div>
           <div v-if="hasActiveCustomersObjective" class="stat-comparison">
             <div class="comparison-item">
               <span class="comparison-label">Objective:</span>
-              <span class="comparison-value">{{ activeCustomersObjective.toLocaleString() }}</span>
+              <span class="comparison-value">{{
+                activeCustomersObjective.toLocaleString()
+              }}</span>
             </div>
             <div class="comparison-item">
               <span class="comparison-label">Remaining:</span>
@@ -207,7 +234,10 @@
           </div>
           <div v-else class="stat-help">
             <el-icon><InfoFilled /></el-icon>
-            <span>Active customers objective not set for {{ objectiveBrandContext }}</span>
+            <span
+              >Active customers objective not set for
+              {{ objectiveBrandContext }}</span
+            >
           </div>
         </div>
       </el-card>
@@ -216,37 +246,36 @@
 </template>
 
 <script setup lang="ts">
-import { InfoFilled, Loading } from '@element-plus/icons-vue'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { api, useAuthStore } from '../stores/auth'
-import { useSettingsStore } from '../stores/settings'
+import { InfoFilled, Loading } from "@element-plus/icons-vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
+import { api } from "../stores/auth";
+import { useSettingsStore } from "../stores/settings";
 
 interface StatisticsData {
-  sales: number
-  units: number
-  web_sales: number
-  direct_sales: number
-  return: number
-  average_price: number
-  customers: number
-  active_customers: number
+  sales: number;
+  units: number;
+  web_sales: number;
+  direct_sales: number;
+  return: number;
+  average_price: number;
+  customers: number;
+  active_customers: number;
 }
 
 interface RepresentativeData {
-  id: string
-  code: number
-  key: string
-  name: string
-  objectives: Record<string, Record<string, number>>
+  id: string;
+  code: number;
+  key: string;
+  name: string;
+  objectives: Record<string, Record<string, number>>;
 }
 
 interface Brand {
-  brand_name: string
-  showed_brand_name: string
+  brand_name: string;
+  showed_brand_name: string;
 }
 
-const authStore = useAuthStore()
-const settingsStore = useSettingsStore()
+const settingsStore = useSettingsStore();
 
 // State
 const statsData = reactive<StatisticsData>({
@@ -257,223 +286,239 @@ const statsData = reactive<StatisticsData>({
   return: 0,
   average_price: 0,
   customers: 0,
-  active_customers: 0
-})
+  active_customers: 0,
+});
 
-const brands = ref<Brand[]>([])
-const representativeData = ref<RepresentativeData | null>(null)
-const loading = ref(false)
-const fetchError = ref<string | null>(null)
+const brands = ref<Brand[]>([]);
+const representativeData = ref<RepresentativeData | null>(null);
+const loading = ref(false);
+const fetchError = ref<string | null>(null);
 
 // Fetch data on component mount and when settings change
 onMounted(() => {
-  fetchAllData()
-})
+  fetchAllData();
+});
 
 // Watch for changes in settings
 watch(
-  () => [settingsStore.selectedBrand, settingsStore.period.period_start, settingsStore.period.period_end],
+  () => [
+    settingsStore.selectedBrand,
+    settingsStore.period.period_start,
+    settingsStore.period.period_end,
+  ],
   () => {
-    fetchAllData()
-  }
-)
+    fetchAllData();
+  },
+);
 
 // Computed properties for objectives
 const objectivesInfo = computed(() => {
-  if (!representativeData.value) return null
-  
-  const selectedBrand = settingsStore.selectedBrand
-  const objectives = representativeData.value.objectives
-  
+  if (!representativeData.value) return null;
+
+  const selectedBrand = settingsStore.selectedBrand;
+  const objectives = representativeData.value.objectives;
+
   // Try selected brand first, then 'ALL'
   if (selectedBrand && objectives[selectedBrand]) {
     return {
-      source: 'brand',
+      source: "brand",
       brand: selectedBrand,
-      data: objectives[selectedBrand]
-    }
-  } else if (objectives['ALL']) {
+      data: objectives[selectedBrand],
+    };
+  } else if (objectives["ALL"]) {
     return {
-      source: 'all',
-      brand: 'ALL',
-      data: objectives['ALL']
-    }
+      source: "all",
+      brand: "ALL",
+      data: objectives["ALL"],
+    };
   }
-  
-  return null
-})
+
+  return null;
+});
 
 const hasObjectives = computed(() => {
-  return objectivesInfo.value !== null
-})
+  return objectivesInfo.value !== null;
+});
 
 const salesPerCustomerObjective = computed(() => {
-  return objectivesInfo.value?.data?.salesPerCustomer || 0
-})
+  return objectivesInfo.value?.data?.salesPerCustomer || 0;
+});
 
 const activeCustomersObjective = computed(() => {
-  return objectivesInfo.value?.data?.activeCustomers || 0
-})
+  return objectivesInfo.value?.data?.activeCustomers || 0;
+});
 
 const objectiveBrandContext = computed(() => {
-  if (!objectivesInfo.value) return 'No objectives set'
-  return objectivesInfo.value.source === 'brand' 
+  if (!objectivesInfo.value) return "No objectives set";
+  return objectivesInfo.value.source === "brand"
     ? getBrandDisplayName(objectivesInfo.value.brand)
-    : 'All Brands'
-})
+    : "All Brands";
+});
 
 // Computed properties for sales comparison
 const hasSalesObjective = computed(() => {
-  return salesPerCustomerObjective.value > 0 && statsData.active_customers > 0
-})
+  return salesPerCustomerObjective.value > 0 && statsData.active_customers > 0;
+});
 
 const salesObjective = computed(() => {
-  return salesPerCustomerObjective.value * statsData.active_customers
-})
+  return salesPerCustomerObjective.value * statsData.active_customers;
+});
 
 const salesRemaining = computed(() => {
-  return Math.max(0, salesObjective.value - statsData.sales)
-})
+  return Math.max(0, salesObjective.value - statsData.sales);
+});
 
 const salesProgressPercentage = computed(() => {
-  if (!hasSalesObjective.value) return 0
-  return Math.min(100, Math.round((statsData.sales / salesObjective.value) * 100))
-})
+  if (!hasSalesObjective.value) return 0;
+  return Math.min(
+    100,
+    Math.round((statsData.sales / salesObjective.value) * 100),
+  );
+});
 
 const salesProgressType = computed(() => {
-  if (!hasSalesObjective.value) return 'info'
-  if (salesProgressPercentage.value >= 100) return 'success'
-  if (salesProgressPercentage.value >= 75) return 'warning'
-  return 'danger'
-})
+  if (!hasSalesObjective.value) return "info";
+  if (salesProgressPercentage.value >= 100) return "success";
+  if (salesProgressPercentage.value >= 75) return "warning";
+  return "danger";
+});
 
 const salesRemainingClass = computed(() => {
-  return salesRemaining.value > 0 ? 'remaining-positive' : 'remaining-negative'
-})
+  return salesRemaining.value > 0 ? "remaining-positive" : "remaining-negative";
+});
 
 // Computed properties for customers comparison
 const hasActiveCustomersObjective = computed(() => {
-  return activeCustomersObjective.value > 0
-})
+  return activeCustomersObjective.value > 0;
+});
 
 const customersRemaining = computed(() => {
-  return Math.max(0, activeCustomersObjective.value - statsData.active_customers)
-})
+  return Math.max(
+    0,
+    activeCustomersObjective.value - statsData.active_customers,
+  );
+});
 
 const customersProgressPercentage = computed(() => {
-  if (!hasActiveCustomersObjective.value) return 0
-  return Math.min(100, Math.round((statsData.active_customers / activeCustomersObjective.value) * 100))
-})
+  if (!hasActiveCustomersObjective.value) return 0;
+  return Math.min(
+    100,
+    Math.round(
+      (statsData.active_customers / activeCustomersObjective.value) * 100,
+    ),
+  );
+});
 
 const customersProgressType = computed(() => {
-  if (!hasActiveCustomersObjective.value) return 'info'
-  if (customersProgressPercentage.value >= 100) return 'success'
-  if (customersProgressPercentage.value >= 75) return 'warning'
-  return 'danger'
-})
+  if (!hasActiveCustomersObjective.value) return "info";
+  if (customersProgressPercentage.value >= 100) return "success";
+  if (customersProgressPercentage.value >= 75) return "warning";
+  return "danger";
+});
 
 const customersRemainingClass = computed(() => {
-  return customersRemaining.value > 0 ? 'remaining-positive' : 'remaining-negative'
-})
+  return customersRemaining.value > 0
+    ? "remaining-positive"
+    : "remaining-negative";
+});
 
 // Formatted period for display
 const formattedPeriod = computed(() => {
-  return `${settingsStore.period.period_start} to ${settingsStore.period.period_end}`
-})
+  return `${settingsStore.period.period_start} to ${settingsStore.period.period_end}`;
+});
 
 // Fetch all required data
 const fetchAllData = async () => {
-  loading.value = true
-  fetchError.value = null
-  
+  loading.value = true;
+  fetchError.value = null;
+
   try {
     await Promise.all([
       fetchBrands(),
       fetchRepresentativeData(),
-      fetchStatisticsData()
-    ])
+      fetchStatisticsData(),
+    ]);
   } catch (error) {
-    console.error('Failed to fetch all data:', error)
-    fetchError.value = 'Failed to load statistics data. Please try again.'
+    console.error("Failed to fetch all data:", error);
+    fetchError.value = "Failed to load statistics data. Please try again.";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // Fetch brands for display names
 const fetchBrands = async () => {
   try {
-    const response = await api.get('/api/v1/settings/brand')
-    brands.value = response.data
+    const response = await api.get("/api/v1/settings/brand");
+    brands.value = response.data;
   } catch (error) {
-    console.error('Failed to fetch brands:', error)
+    console.error("Failed to fetch brands:", error);
   }
-}
+};
 
 // Fetch representative data for objectives
 const fetchRepresentativeData = async () => {
   try {
-    const response = await api.get('/api/v1/rep/')
-    representativeData.value = response.data
+    const response = await api.get("/api/v1/rep/");
+    representativeData.value = response.data;
   } catch (error) {
-    console.error('Failed to fetch representative data:', error)
+    console.error("Failed to fetch representative data:", error);
   }
-}
+};
 
 // Fetch statistics data
 const fetchStatisticsData = async () => {
   const params: Record<string, string> = {
     start_date: settingsStore.period.period_start,
-    end_date: settingsStore.period.period_end
-  }
-  
+    end_date: settingsStore.period.period_end,
+  };
+
   // Only add brand if it's set
   if (settingsStore.selectedBrand) {
-    params.brand = settingsStore.selectedBrand
+    params.brand = settingsStore.selectedBrand;
   }
-  
+
   try {
     // Fetch sales data
-    const salesResponse = await api.get('/api/v1/statistics/sales', {
-      params
-    })
-    
+    const salesResponse = await api.get("/api/v1/statistics/sales", {
+      params,
+    });
+
     // Fetch customers data
-    const customersResponse = await api.get('/api/v1/statistics/customers', {
-      params
-    })
-    
+    const customersResponse = await api.get("/api/v1/statistics/customers", {
+      params,
+    });
+
     // Update stats data
     Object.assign(statsData, {
       ...salesResponse.data,
-      ...customersResponse.data
-    })
-    
+      ...customersResponse.data,
+    });
   } catch (error) {
-    console.error('Failed to fetch statistics:', error)
-    throw error
+    console.error("Failed to fetch statistics:", error);
+    throw error;
   }
-}
+};
 
 // Helper functions
 const getBrandDisplayName = (brandName: string) => {
-  const brand = brands.value.find(b => b.brand_name === brandName)
-  return brand ? brand.showed_brand_name : brandName
-}
+  const brand = brands.value.find((b) => b.brand_name === brandName);
+  return brand ? brand.showed_brand_name : brandName;
+};
 
 const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(value)
-}
+    maximumFractionDigits: 2,
+  }).format(value);
+};
 
 const calculatePercentage = (part: number, total: number) => {
-  if (total === 0) return 0
-  return Math.round((part / total) * 100)
-}
+  if (total === 0) return 0;
+  return Math.round((part / total) * 100);
+};
 </script>
 
 <style scoped>

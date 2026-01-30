@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="map-container">
     <div class="page-header">
@@ -9,7 +10,7 @@
         v-model="departmentSearch"
         placeholder="Search by department (first 2 digits of code)"
         clearable
-        style="width: 300px; margin-right: 15px;"
+        style="width: 300px; margin-right: 15px"
         @clear="applyFilters"
         @keyup.enter="applyFilters"
       >
@@ -17,13 +18,13 @@
           <el-icon><Search /></el-icon>
         </template>
       </el-input>
-      
+
       <el-select
         v-model="favoriteFilter"
         placeholder="Favorite"
         clearable
         @change="applyFilters"
-        style="width: 120px; margin-right: 15px;"
+        style="width: 120px; margin-right: 15px"
       >
         <el-option label="Favorites" value="true" />
         <el-option label="Non-Favorites" value="false" />
@@ -34,18 +35,18 @@
         placeholder="Active"
         clearable
         @change="applyFilters"
-        style="width: 120px;"
+        style="width: 120px"
       >
         <el-option label="Active" value="true" />
         <el-option label="Inactive" value="false" />
       </el-select>
 
-      <el-button 
-        type="primary" 
+      <el-button
+        type="primary"
         @click="showLegend = !showLegend"
-        style="margin-left: 15px;"
+        style="margin-left: 15px"
       >
-        {{ showLegend ? 'Hide' : 'Show' }} Legend
+        {{ showLegend ? "Hide" : "Show" }} Legend
       </el-button>
     </div>
 
@@ -95,96 +96,97 @@
 </template>
 
 <script setup lang="ts">
-import { Search } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
-import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import CustomerDetail from '../components/CustomerDetail.vue'
-import CustomerEdit from '../components/CustomerEdit.vue'
-import { api, useAuthStore } from '../stores/auth'
-import { useSettingsStore } from '../stores/settings'
+import { Search } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
+import { nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import CustomerDetail from "../components/CustomerDetail.vue";
+import CustomerEdit from "../components/CustomerEdit.vue";
+import { api } from "../stores/auth";
+import { useSettingsStore } from "../stores/settings";
 
 // Import Leaflet for mapping
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 // Fix for default markers in Leaflet with Webpack
-delete (L.Icon.Default.prototype as any)._getIconUrl
+delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-})
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+});
 
 interface Customer {
-  _id: string
-  code: string
-  city: string
-  latitude: string
-  longitude: string
-  name: string
-  phone: string
-  score: number
-  period1_total: number
-  period1_count: number
-  period2_total: number
-  objective: number
-  visits_count: number
-  favorite: boolean
-  active: boolean
-  period_progress: number
-  objective_progress: number
-  last_visit: string | null
-  next_visit: string | null
-  note?: string
+  _id: string;
+  code: string;
+  city: string;
+  latitude: string;
+  longitude: string;
+  name: string;
+  phone: string;
+  score: number;
+  period1_total: number;
+  period1_count: number;
+  period2_total: number;
+  objective: number;
+  visits_count: number;
+  favorite: boolean;
+  active: boolean;
+  period_progress: number;
+  objective_progress: number;
+  last_visit: string | null;
+  next_visit: string | null;
+  note?: string;
 }
 
-const authStore = useAuthStore()
-const settingsStore = useSettingsStore()
+const settingsStore = useSettingsStore();
 
 // Reactive data
-const customers = ref<Customer[]>([])
-const loading = ref(false)
-const departmentSearch = ref('')
-const favoriteFilter = ref('')
-const activeFilter = ref('')
-const showLegend = ref(true)
+const loading = ref(false);
+const departmentSearch = ref("");
+const favoriteFilter = ref("");
+const activeFilter = ref("");
+const showLegend = ref(true);
 
-const detailVisible = ref(false)
-const editVisible = ref(false)
-const selectedCustomer = ref<Customer | null>(null)
-const editingCustomer = ref<Customer | null>(null)
+const detailVisible = ref(false);
+const editVisible = ref(false);
+const selectedCustomer = ref<Customer | null>(null);
+const editingCustomer = ref<Customer | null>(null);
 
-const allCustomers = ref<Customer[]>([])
-const filteredCustomers = ref<Customer[]>([])
+const allCustomers = ref<Customer[]>([]);
+const filteredCustomers = ref<Customer[]>([]);
 
 // Map references
-const mapContainer = ref<HTMLElement>()
-let map: L.Map | null = null
-let markers: L.LayerGroup | null = null
+const mapContainer = ref<HTMLElement>();
+let map: L.Map | null = null;
+let markers: L.LayerGroup | null = null;
 
 // Color scheme for priority scores
 const getMarkerColor = (score: number | undefined | null): string => {
-  if (score === undefined || score === null) return '#909399' // gray for no score
-  
-  if (score >= 5000) return '#f56c6c' // red for high priority
-  if (score >= 1000) return '#e6a23c' // orange for medium priority
-  return '#67c23a' // green for low priority
-}
+  if (score === undefined || score === null) return "#909399"; // gray for no score
+
+  if (score >= 5000) return "#f56c6c"; // red for high priority
+  if (score >= 1000) return "#e6a23c"; // orange for medium priority
+  return "#67c23a"; // green for low priority
+};
 
 const getMarkerSize = (score: number | undefined | null): number => {
-  if (score === undefined || score === null) return 8
-  
-  if (score >= 5000) return 12 // larger for high priority
-  if (score >= 1000) return 10 // medium size for medium priority
-  return 8 // smaller for low priority
-}
+  if (score === undefined || score === null) return 8;
+
+  if (score >= 5000) return 12; // larger for high priority
+  if (score >= 1000) return 10; // medium size for medium priority
+  return 8; // smaller for low priority
+};
 
 const createCustomIcon = (customer: Customer) => {
-  const color = getMarkerColor(customer.score)
-  const size = getMarkerSize(customer.score)
-  
+  const color = getMarkerColor(customer.score);
+  const size = getMarkerSize(customer.score);
+
   return L.divIcon({
-    className: 'custom-marker',
+    className: "custom-marker",
     html: `
       <div style="
         background-color: ${color};
@@ -198,54 +200,54 @@ const createCustomIcon = (customer: Customer) => {
     `,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
-  })
-}
+  });
+};
 
 const initializeMap = () => {
-  if (!mapContainer.value) return
+  if (!mapContainer.value) return;
 
   // Initialize map centered on France
-  map = L.map(mapContainer.value).setView([46.603354, 1.888334], 6)
+  map = L.map(mapContainer.value).setView([46.603354, 1.888334], 6);
 
   // Add tile layer
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors',
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors",
     maxZoom: 19,
-  }).addTo(map)
+  }).addTo(map);
 
   // Initialize markers layer group
-  markers = L.layerGroup().addTo(map)
-}
+  markers = L.layerGroup().addTo(map);
+};
 
 const updateMapMarkers = () => {
-  const currentMarkers = markers
-  if (!map || !currentMarkers) return
+  const currentMarkers = markers;
+  if (!map || !currentMarkers) return;
 
   // Clear existing markers
-  currentMarkers.clearLayers()
+  currentMarkers.clearLayers();
 
   // Add markers for filtered customers with valid coordinates
-  filteredCustomers.value.forEach(customer => {
-    const lat = parseFloat(customer.latitude)
-    const lng = parseFloat(customer.longitude)
-    
-    if (isNaN(lat) || isNaN(lng)) return
+  filteredCustomers.value.forEach((customer) => {
+    const lat = parseFloat(customer.latitude);
+    const lng = parseFloat(customer.longitude);
 
-    const marker = L.marker([lat, lng], { 
-      icon: createCustomIcon(customer) 
-    })
+    if (isNaN(lat) || isNaN(lng)) return;
+
+    const marker = L.marker([lat, lng], {
+      icon: createCustomIcon(customer),
+    });
 
     // Tooltip on hover
     marker.bindTooltip(`
       <div class="customer-tooltip">
         <strong>${customer.name}</strong><br>
         <strong>Address:</strong> ${customer.city} (${customer.code})<br>
-        <strong>Phone:</strong> ${customer.phone || 'N/A'}<br>
+        <strong>Phone:</strong> ${customer.phone || "N/A"}<br>
         <strong>Last Visit:</strong> ${formatDate(customer.last_visit)}<br>
         <strong>Next Visit:</strong> ${formatDate(customer.next_visit)}<br>
         <strong>Units:</strong> ${customer.period1_count}
       </div>
-    `)
+    `);
 
     // Popup on click
     marker.bindPopup(`
@@ -253,143 +255,150 @@ const updateMapMarkers = () => {
         <h4>${customer.name}</h4>
         <p><strong>Code:</strong> ${customer.code}</p>
         <p><strong>City:</strong> ${customer.city}</p>
-        <p><strong>Phone:</strong> ${customer.phone || 'N/A'}</p>
+        <p><strong>Phone:</strong> ${customer.phone || "N/A"}</p>
         <p><strong>Last Visit:</strong> ${formatDate(customer.last_visit)}</p>
         <p><strong>Next Visit:</strong> ${formatDate(customer.next_visit)}</p>
         <p><strong>Units:</strong> ${customer.period1_count}</p>
         <p><strong>Priority Score:</strong> ${formatScore(customer.score)}</p>
-        <p><strong>Status:</strong> ${customer.active ? 'Active' : 'Inactive'}</p>
+        <p><strong>Status:</strong> ${customer.active ? "Active" : "Inactive"}</p>
         <button onclick="window.viewCustomerDetails('${customer._id}')" 
                 style="margin-top: 10px; padding: 5px 10px; background: #409eff; color: white; border: none; border-radius: 4px; cursor: pointer;">
           View Details
         </button>
       </div>
-    `)
+    `);
 
-    marker.on('click', () => {
-      showCustomerDetails(customer)
-    })
+    marker.on("click", () => {
+      showCustomerDetails(customer);
+    });
 
-    currentMarkers.addLayer(marker)
-  })
+    currentMarkers.addLayer(marker);
+  });
 
   // Fit map to show all markers
   if (filteredCustomers.value.length > 0) {
-    const markerGroup = new L.FeatureGroup()
+    const markerGroup = new L.FeatureGroup();
     currentMarkers.eachLayer((layer: any) => {
-      markerGroup.addLayer(layer)
-    })
-    map.fitBounds(markerGroup.getBounds().pad(0.1))
+      markerGroup.addLayer(layer);
+    });
+    map.fitBounds(markerGroup.getBounds().pad(0.1));
   }
-}
+};
 
 // Expose function to window for popup button
-;(window as any).viewCustomerDetails = (customerId: string) => {
-  const customer = filteredCustomers.value.find(c => c._id === customerId)
+(window as any).viewCustomerDetails = (customerId: string) => {
+  const customer = filteredCustomers.value.find((c) => c._id === customerId);
   if (customer) {
-    showCustomerDetails(customer)
+    showCustomerDetails(customer);
   }
-}
-
-const getDepartmentFromCode = (code: string) => {
-  return code.substring(0, 2)
-}
+};
 
 const formatScore = (score: number | undefined | null) => {
-  if (score === undefined || score === null) return 'N/A'
+  if (score === undefined || score === null) return "N/A";
   if (score >= 1000) {
-    return `${(score / 1000).toFixed(1)}k`
+    return `${(score / 1000).toFixed(1)}k`;
   }
-  return Math.round(score).toString()
-}
+  return Math.round(score).toString();
+};
 
 const formatDate = (dateString: string | null) => {
-  if (!dateString) return 'N/A'
-  return new Date(dateString).toLocaleDateString()
-}
+  if (!dateString) return "N/A";
+  return new Date(dateString).toLocaleDateString();
+};
 
 const fetchCustomers = async () => {
-  loading.value = true
+  loading.value = true;
   try {
-    const period1Start = settingsStore.period.period_start
-    const period1End = settingsStore.period.period_end
+    const period1Start = settingsStore.period.period_start;
+    const period1End = settingsStore.period.period_end;
 
-    const period1StartDate = new Date(period1Start)
-    const period1EndDate = new Date(period1End)
+    const period1StartDate = new Date(period1Start);
+    const period1EndDate = new Date(period1End);
 
-    const period2Start = new Date(period1StartDate.getFullYear() - 1, period1StartDate.getMonth(), period1StartDate.getDate()).toISOString().split('T')[0]
-    const period2End = new Date(period1EndDate.getFullYear() - 1, period1EndDate.getMonth(), period1EndDate.getDate()).toISOString().split('T')[0]
+    const period2Start = new Date(
+      period1StartDate.getFullYear() - 1,
+      period1StartDate.getMonth(),
+      period1StartDate.getDate(),
+    )
+      .toISOString()
+      .split("T")[0];
+    const period2End = new Date(
+      period1EndDate.getFullYear() - 1,
+      period1EndDate.getMonth(),
+      period1EndDate.getDate(),
+    )
+      .toISOString()
+      .split("T")[0];
 
-    const url = `/api/v1/customers/?period1_start=${period1Start}&period1_end=${period1End}&period2_start=${period2Start}&period2_end=${period2End}`
+    const url = `/api/v1/customers/?period1_start=${period1Start}&period1_end=${period1End}&period2_start=${period2Start}&period2_end=${period2End}`;
 
-    const response = await api.get(url)
-    
-    allCustomers.value = response.data
-    applyFilters()
-    
+    const response = await api.get(url);
+
+    allCustomers.value = response.data;
+    applyFilters();
   } catch (error) {
-    console.error('Failed to fetch customers:', error)
-    ElMessage.error('Failed to load customers')
+    console.error("Failed to fetch customers:", error);
+    ElMessage.error("Failed to load customers");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const applyFilters = () => {
-  let result = [...allCustomers.value]
-  
+  let result = [...allCustomers.value];
+
   // Apply department filter
   if (departmentSearch.value) {
-    result = result.filter(customer => 
-      customer.code.substring(0, 2) === departmentSearch.value
-    )
+    result = result.filter(
+      (customer) => customer.code.substring(0, 2) === departmentSearch.value,
+    );
   }
-  
+
   // Apply favorite filter
-  if (favoriteFilter.value !== '') {
-    const fav = favoriteFilter.value === 'true'
-    result = result.filter(customer => customer.favorite === fav)
+  if (favoriteFilter.value !== "") {
+    const fav = favoriteFilter.value === "true";
+    result = result.filter((customer) => customer.favorite === fav);
   }
-  
+
   // Apply active filter
-  if (activeFilter.value !== '') {
-    const active = activeFilter.value === 'true'
-    result = result.filter(customer => customer.active === active)
+  if (activeFilter.value !== "") {
+    const active = activeFilter.value === "true";
+    result = result.filter((customer) => customer.active === active);
   }
-  
-  filteredCustomers.value = result
-  
+
+  filteredCustomers.value = result;
+
   // Update map markers
   nextTick(() => {
-    updateMapMarkers()
-  })
-}
+    updateMapMarkers();
+  });
+};
 
 watch([departmentSearch, favoriteFilter, activeFilter], () => {
-  applyFilters()
-})
+  applyFilters();
+});
 
 const showCustomerDetails = (customer: Customer) => {
-  selectedCustomer.value = customer
-  detailVisible.value = true
-}
+  selectedCustomer.value = customer;
+  detailVisible.value = true;
+};
 
 const editCustomer = (customer: Customer) => {
-  editingCustomer.value = { ...customer }
-  editVisible.value = true
-}
+  editingCustomer.value = { ...customer };
+  editVisible.value = true;
+};
 
 onMounted(() => {
-  initializeMap()
-  fetchCustomers()
-})
+  initializeMap();
+  fetchCustomers();
+});
 
 onUnmounted(() => {
   if (map) {
-    map.remove()
-    map = null
+    map.remove();
+    map = null;
   }
-})
+});
 </script>
 
 <style scoped>

@@ -4,7 +4,10 @@
     <app-header v-if="showHeader" />
     <div class="main-container" v-if="showHeader">
       <app-sidebar />
-      <main class="main-content" :class="{ 'sidebar-collapsed': uiStore.isSidebarCollapsed }">
+      <main
+        class="main-content"
+        :class="{ 'sidebar-collapsed': uiStore.isSidebarCollapsed }"
+      >
         <router-view />
       </main>
     </div>
@@ -13,21 +16,32 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import AppHeader from './components/AppHeader.vue'
-import AppSidebar from './components/AppSidebar.vue'
-import { useUIStore } from './stores/ui'
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+import AppHeader from "./components/AppHeader.vue";
+import AppSidebar from "./components/AppSidebar.vue";
+import { useUIStore } from "./stores/ui";
 
-const route = useRoute()
-const uiStore = useUIStore()
+const route = useRoute();
+const uiStore = useUIStore();
 
-const showHeader = computed(() => route.name !== 'login')
+const showHeader = computed(() => route.name !== "login");
 </script>
 
 <style>
 #app {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Open Sans",
+    "Helvetica Neue",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;

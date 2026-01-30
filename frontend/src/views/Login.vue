@@ -1,7 +1,8 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="login-container">
     <div class="login-background"></div>
-    
+
     <div class="login-content">
       <div class="login-box">
         <div class="logo-container">
@@ -11,12 +12,14 @@
 
         <el-card shadow="always" class="login-form-card">
           <h2 class="login-title">Welcome Back</h2>
-          <p class="login-subtitle">Please enter your credentials to access your account</p>
+          <p class="login-subtitle">
+            Please enter your credentials to access your account
+          </p>
 
-          <el-form 
-            @submit.prevent="handleLogin" 
-            :model="form" 
-            :rules="rules" 
+          <el-form
+            @submit.prevent="handleLogin"
+            :model="form"
+            :rules="rules"
             ref="loginForm"
             class="login-form"
           >
@@ -40,9 +43,9 @@
               />
             </el-form-item>
 
-            <el-button 
-              type="primary" 
-              native-type="submit" 
+            <el-button
+              type="primary"
+              native-type="submit"
               :loading="loading"
               class="login-button"
               size="large"
@@ -65,55 +68,64 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { User, Lock } from '@element-plus/icons-vue'
-import { useAuthStore } from '../stores/auth'
+import { Lock, User } from "@element-plus/icons-vue";
+import { ElMessage, type FormInstance, type FormRules } from "element-plus";
+import { reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 
-// Import your assets (make sure to add these files to your assets folder)
-import backgroundImage from '@/assets/login_background.png'
-import logo from '@/assets/logo.jpeg'
+import logo from "@/assets/logo.jpeg";
 
-const router = useRouter()
-const authStore = useAuthStore()
+const router = useRouter();
+const authStore = useAuthStore();
 
 const form = reactive({
-  email: '',
-  password: ''
-})
+  email: "",
+  password: "",
+});
 
 const rules = reactive<FormRules>({
   email: [
-    { required: true, message: 'Please enter your email', trigger: 'blur' },
-    { type: 'email', message: 'Please enter a valid email address', trigger: 'blur' }
+    { required: true, message: "Please enter your email", trigger: "blur" },
+    {
+      type: "email",
+      message: "Please enter a valid email address",
+      trigger: "blur",
+    },
   ],
   password: [
-    { required: true, message: 'Please enter your password', trigger: 'blur' },
-    { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' }
-  ]
-})
+    { required: true, message: "Please enter your password", trigger: "blur" },
+    {
+      min: 6,
+      message: "Password must be at least 6 characters",
+      trigger: "blur",
+    },
+  ],
+});
 
-const loading = ref(false)
-const loginForm = ref<FormInstance>()
+const loading = ref(false);
+const loginForm = ref<FormInstance>();
 
 const handleLogin = async () => {
-  if (!loginForm.value) return
-  
-  const valid = await loginForm.value.validate()
-  if (!valid) return
+  if (!loginForm.value) return;
 
-  loading.value = true
+  const valid = await loginForm.value.validate();
+  if (!valid) return;
+
+  loading.value = true;
   try {
-    await authStore.login(form.email, form.password)
-    ElMessage.success('Login successful!')
-    router.push('/')
+    await authStore.login(form.email, form.password);
+    ElMessage.success("Login successful!");
+    router.push("/");
   } catch (error: any) {
-    ElMessage.error(error.response?.data?.detail || 'Login failed. Please check your credentials.')
+    ElMessage.error(
+      error.response?.data?.detail ||
+        "Login failed. Please check your credentials.",
+    );
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 </script>
 
 <style scoped>
@@ -135,7 +147,7 @@ const handleLogin = async () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('@/assets/login_background.png');
+  background-image: url("@/assets/login_background.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -223,7 +235,7 @@ const handleLogin = async () => {
   height: 48px;
   font-size: 16px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #409EFF 0%, #337ecc 100%);
+  background: linear-gradient(135deg, #409eff 0%, #337ecc 100%);
   border: none;
 }
 
@@ -239,7 +251,7 @@ const handleLogin = async () => {
 }
 
 .forgot-link {
-  color: #409EFF;
+  color: #409eff;
   text-decoration: none;
   font-size: 14px;
 }
@@ -264,15 +276,15 @@ const handleLogin = async () => {
   .login-box {
     max-width: 100%;
   }
-  
+
   .login-form-card :deep(.el-card__body) {
     padding: 20px;
   }
-  
+
   .logo {
     height: 60px;
   }
-  
+
   .company-name {
     font-size: 24px;
   }

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="products-container">
     <div class="page-header">
@@ -79,10 +80,10 @@
             </el-radio-group>
           </div>
         </template>
-        
+
         <div class="distribution-content">
-          <div 
-            v-for="brand in brandDistribution" 
+          <div
+            v-for="brand in brandDistribution"
             :key="brand.brand_name"
             class="brand-item"
           >
@@ -90,14 +91,12 @@
               <span class="brand-name">{{ brand.showed_brand_name }}</span>
               <span class="brand-percentage">{{ brand.percentage }}%</span>
             </div>
-            <el-progress 
-              :percentage="brand.percentage" 
+            <el-progress
+              :percentage="brand.percentage"
               :show-text="false"
               :color="getBrandColor(brand.brand_name)"
             />
-            <div class="brand-amount">
-              {{ formatNumber(brand.amount) }}€
-            </div>
+            <div class="brand-amount">{{ formatNumber(brand.amount) }}€</div>
           </div>
         </div>
       </el-card>
@@ -113,7 +112,7 @@
               v-model="searchQuery"
               placeholder="Search products..."
               clearable
-              style="width: 250px;"
+              style="width: 250px"
               @clear="handleSearch"
               @keyup.enter="handleSearch"
             >
@@ -133,71 +132,146 @@
         @sort-change="handleSortChange"
         stripe
       >
-        <el-table-column prop="product_id" label="ID" sortable="custom" width="120" />
-        <el-table-column prop="brand" label="Brand" sortable="custom" width="130">
+        <el-table-column
+          prop="product_id"
+          label="ID"
+          sortable="custom"
+          width="120"
+        />
+        <el-table-column
+          prop="brand"
+          label="Brand"
+          sortable="custom"
+          width="130"
+        >
           <template #default="{ row }">
             <el-tag effect="plain">
               {{ getBrandDisplayName(row.brand) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="Name" sortable="custom" min-width="180" />
-        <el-table-column prop="price" label="Price" sortable="custom" width="120" align="right">
+        <el-table-column
+          prop="name"
+          label="Name"
+          sortable="custom"
+          min-width="180"
+        />
+        <el-table-column
+          prop="price"
+          label="Price"
+          sortable="custom"
+          width="120"
+          align="right"
+        >
           <template #default="{ row }">
-            {{ row.price === 'WIP' ? 'TBD' : `$${row.price}` }}
+            {{ row.price === "WIP" ? "TBD" : `$${row.price}` }}
           </template>
         </el-table-column>
 
         <!-- Sales Columns -->
-        <el-table-column prop="sales" label="Units Sold" sortable="custom" width="120" align="right">
+        <el-table-column
+          prop="sales"
+          label="Units Sold"
+          sortable="custom"
+          width="120"
+          align="right"
+        >
           <template #default="{ row }">
             <span class="sales-number">{{ formatNumber(row.sales) }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="total" label="Total Revenue" sortable="custom" width="140" align="right">
+        <el-table-column
+          prop="total"
+          label="Total Revenue"
+          sortable="custom"
+          width="140"
+          align="right"
+        >
           <template #default="{ row }">
             <span class="revenue">{{ formatNumber(row.total) }}€</span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="my_sales" label="My Units" sortable="custom" width="110" align="right">
+        <el-table-column
+          prop="my_sales"
+          label="My Units"
+          sortable="custom"
+          width="110"
+          align="right"
+        >
           <template #default="{ row }">
             {{ formatNumber(row.my_sales) }}
           </template>
         </el-table-column>
 
-        <el-table-column prop="my_total" label="My Revenue" sortable="custom" width="130" align="right">
+        <el-table-column
+          prop="my_total"
+          label="My Revenue"
+          sortable="custom"
+          width="130"
+          align="right"
+        >
           <template #default="{ row }">
             <span class="my-revenue">{{ formatNumber(row.my_total) }}€</span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="web_sales" label="Web Units" sortable="custom" width="110" align="right">
+        <el-table-column
+          prop="web_sales"
+          label="Web Units"
+          sortable="custom"
+          width="110"
+          align="right"
+        >
           <template #default="{ row }">
             {{ formatNumber(row.web_sales) }}
           </template>
         </el-table-column>
 
-        <el-table-column prop="web_total" label="Web Revenue" sortable="custom" width="130" align="right">
+        <el-table-column
+          prop="web_total"
+          label="Web Revenue"
+          sortable="custom"
+          width="130"
+          align="right"
+        >
           <template #default="{ row }">
             {{ formatNumber(row.web_total) }}€
           </template>
         </el-table-column>
 
-        <el-table-column prop="my_web_sales" label="My Web Units" sortable="custom" width="120" align="right">
+        <el-table-column
+          prop="my_web_sales"
+          label="My Web Units"
+          sortable="custom"
+          width="120"
+          align="right"
+        >
           <template #default="{ row }">
             {{ formatNumber(row.my_web_sales) }}
           </template>
         </el-table-column>
 
-        <el-table-column prop="my_web_total" label="My Web Revenue" sortable="custom" width="140" align="right">
+        <el-table-column
+          prop="my_web_total"
+          label="My Web Revenue"
+          sortable="custom"
+          width="140"
+          align="right"
+        >
           <template #default="{ row }">
             {{ formatNumber(row.my_web_total) }}€
           </template>
         </el-table-column>
 
-        <el-table-column prop="edi" label="EDI" sortable="custom" width="100" align="right">
+        <el-table-column
+          prop="edi"
+          label="EDI"
+          sortable="custom"
+          width="100"
+          align="right"
+        >
           <template #default="{ row }">
             {{ formatNumber(row.edi) }}
           </template>
@@ -208,218 +282,249 @@
 </template>
 
 <script setup lang="ts">
-import { Box, Monitor, Search, TrendCharts, User } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
-import { computed, onMounted, ref, watch } from 'vue'
-import { api, useAuthStore } from '../stores/auth'
-import { useSettingsStore } from '../stores/settings'
+import {
+  Box,
+  Monitor,
+  Search,
+  TrendCharts,
+  User,
+} from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
+import { computed, onMounted, ref, watch } from "vue";
+import { api } from "../stores/auth";
+import { useSettingsStore } from "../stores/settings";
 
 interface Product {
-  product_id: string
-  brand: string
-  name: string
-  price: string
-  sales: number
-  total: number
-  web_sales: number
-  web_total: number
-  my_sales: number
-  my_total: number
-  my_web_sales: number
-  my_web_total: number
-  edi: number
+  product_id: string;
+  brand: string;
+  name: string;
+  price: string;
+  sales: number;
+  total: number;
+  web_sales: number;
+  web_total: number;
+  my_sales: number;
+  my_total: number;
+  my_web_sales: number;
+  my_web_total: number;
+  edi: number;
 }
 
 interface Brand {
-  brand_name: string
-  showed_brand_name: string
+  brand_name: string;
+  showed_brand_name: string;
 }
 
 interface SortConfig {
-  prop: string
-  order: 'ascending' | 'descending' | null
+  prop: string;
+  order: "ascending" | "descending" | null;
 }
 
-const authStore = useAuthStore()
-const settingsStore = useSettingsStore()
+const settingsStore = useSettingsStore();
 
-const products = ref<Product[]>([])
-const brands = ref<Brand[]>([])
-const loading = ref(false)
-const searchQuery = ref('')
-const includeNoSales = ref(false)
-const distributionView = ref<'total' | 'my'>('total')
-const sortConfig = ref<SortConfig>({ prop: 'sales', order: 'descending' })
+const products = ref<Product[]>([]);
+const brands = ref<Brand[]>([]);
+const loading = ref(false);
+const searchQuery = ref("");
+const includeNoSales = ref(false);
+const distributionView = ref<"total" | "my">("total");
+const sortConfig = ref<SortConfig>({ prop: "sales", order: "descending" });
 
 // Get date range from settings
-const period1Start = settingsStore.period.period_start
-const period1End = settingsStore.period.period_end
+const period1Start = settingsStore.period.period_start;
+const period1End = settingsStore.period.period_end;
 
-const period1StartDate = new Date(period1Start)
-const period1EndDate = new Date(period1End)
+const period1StartDate = new Date(period1Start);
+const period1EndDate = new Date(period1End);
 
 // Computed properties
 const filteredProducts = computed(() => {
-  if (!searchQuery.value) return products.value
-  
-  const query = searchQuery.value.toLowerCase()
-  return products.value.filter(product => 
-    product.product_id.toLowerCase().includes(query) ||
-    product.name.toLowerCase().includes(query) ||
-    product.brand.toLowerCase().includes(query)
-  )
-})
+  if (!searchQuery.value) return products.value;
+
+  const query = searchQuery.value.toLowerCase();
+  return products.value.filter(
+    (product) =>
+      product.product_id.toLowerCase().includes(query) ||
+      product.name.toLowerCase().includes(query) ||
+      product.brand.toLowerCase().includes(query),
+  );
+});
 
 const sortedAndFilteredProducts = computed(() => {
-  const data = [...filteredProducts.value]
-  
+  const data = [...filteredProducts.value];
+
   if (!sortConfig.value.prop || !sortConfig.value.order) {
-    return data
+    return data;
   }
 
   return data.sort((a, b) => {
-    const aVal = a[sortConfig.value.prop as keyof Product]
-    const bVal = b[sortConfig.value.prop as keyof Product]
-    
+    const aVal = a[sortConfig.value.prop as keyof Product];
+    const bVal = b[sortConfig.value.prop as keyof Product];
+
     // Handle string and number comparisons
-    if (typeof aVal === 'string' && typeof bVal === 'string') {
-      return sortConfig.value.order === 'ascending' 
+    if (typeof aVal === "string" && typeof bVal === "string") {
+      return sortConfig.value.order === "ascending"
         ? aVal.localeCompare(bVal)
-        : bVal.localeCompare(aVal)
+        : bVal.localeCompare(aVal);
     }
-    
+
     // Handle number comparisons
-    const numA = typeof aVal === 'string' && aVal !== 'WIP' ? parseFloat(aVal) : Number(aVal)
-    const numB = typeof bVal === 'string' && bVal !== 'WIP' ? parseFloat(bVal) : Number(bVal)
-    
-    if (sortConfig.value.order === 'ascending') {
-      return numA - numB
+    const numA =
+      typeof aVal === "string" && aVal !== "WIP"
+        ? parseFloat(aVal)
+        : Number(aVal);
+    const numB =
+      typeof bVal === "string" && bVal !== "WIP"
+        ? parseFloat(bVal)
+        : Number(bVal);
+
+    if (sortConfig.value.order === "ascending") {
+      return numA - numB;
     } else {
-      return numB - numA
+      return numB - numA;
     }
-  })
-})
+  });
+});
 
-const totalSales = computed(() => 
-  products.value.reduce((sum, product) => sum + product.total, 0)
-)
+const totalSales = computed(() =>
+  products.value.reduce((sum, product) => sum + product.total, 0),
+);
 
-const myTotalSales = computed(() => 
-  products.value.reduce((sum, product) => sum + product.my_total, 0)
-)
+const myTotalSales = computed(() =>
+  products.value.reduce((sum, product) => sum + product.my_total, 0),
+);
 
-const webTotalSales = computed(() => 
-  products.value.reduce((sum, product) => sum + product.web_total, 0)
-)
+const webTotalSales = computed(() =>
+  products.value.reduce((sum, product) => sum + product.web_total, 0),
+);
 
 const brandDistribution = computed(() => {
-  const brandMap = new Map()
-  
+  const brandMap = new Map();
+
   // Initialize with all brands
-  brands.value.forEach(brand => {
+  brands.value.forEach((brand) => {
     brandMap.set(brand.brand_name, {
       brand_name: brand.brand_name,
       showed_brand_name: brand.showed_brand_name,
-      amount: 0
-    })
-  })
-  
+      amount: 0,
+    });
+  });
+
   // Sum up amounts based on current view
-  products.value.forEach(product => {
-    const currentAmount = distributionView.value === 'total' ? product.total : product.my_total
+  products.value.forEach((product) => {
+    const currentAmount =
+      distributionView.value === "total" ? product.total : product.my_total;
     if (brandMap.has(product.brand)) {
-      brandMap.get(product.brand).amount += currentAmount
+      brandMap.get(product.brand).amount += currentAmount;
     }
-  })
-  
-  const totalAmount = Array.from(brandMap.values()).reduce((sum, brand) => sum + brand.amount, 0)
-  
+  });
+
+  const totalAmount = Array.from(brandMap.values()).reduce(
+    (sum, brand) => sum + brand.amount,
+    0,
+  );
+
   // Calculate percentages
   return Array.from(brandMap.values())
-    .map(brand => ({
+    .map((brand) => ({
       ...brand,
-      percentage: totalAmount > 0 ? Math.round((brand.amount / totalAmount) * 100) : 0
+      percentage:
+        totalAmount > 0 ? Math.round((brand.amount / totalAmount) * 100) : 0,
     }))
-    .filter(brand => brand.amount > 0)
-    .sort((a, b) => b.amount - a.amount)
-})
+    .filter((brand) => brand.amount > 0)
+    .sort((a, b) => b.amount - a.amount);
+});
 
 // Watchers
 watch([includeNoSales], () => {
-  fetchProducts()
-})
+  fetchProducts();
+});
 
 // Methods
 const fetchProducts = async () => {
-  loading.value = true
+  loading.value = true;
   try {
-    const params = new URLSearchParams()
-    
+    const params = new URLSearchParams();
+
     // Add date range
-    params.append('start_date', period1StartDate.toISOString().split('T')[0])
-    params.append('end_date', period1EndDate.toISOString().split('T')[0])
-    
+    params.append("start_date", period1StartDate.toISOString().split("T")[0]);
+    params.append("end_date", period1EndDate.toISOString().split("T")[0]);
+
     // Add brand filter
     if (settingsStore.selectedBrand) {
-      params.append('brand', settingsStore.selectedBrand)
+      params.append("brand", settingsStore.selectedBrand);
     }
-    
+
     // Add include no sales filter
-    params.append('include_no_sales', includeNoSales.value.toString())
-    
-    const url = `/api/v1/products/?${params.toString()}`
-    
-    const response = await api.get(url)
-    
-    products.value = response.data
+    params.append("include_no_sales", includeNoSales.value.toString());
+
+    const url = `/api/v1/products/?${params.toString()}`;
+
+    const response = await api.get(url);
+
+    products.value = response.data;
   } catch (error) {
-    console.error('Failed to fetch products:', error)
-    ElMessage.error('Failed to load products data')
+    console.error("Failed to fetch products:", error);
+    ElMessage.error("Failed to load products data");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const fetchBrands = async () => {
   try {
-    const response = await api.get('/api/v1/settings/brand')
-    brands.value = response.data
+    const response = await api.get("/api/v1/settings/brand");
+    brands.value = response.data;
   } catch (error) {
-    console.error('Failed to fetch brands:', error)
+    console.error("Failed to fetch brands:", error);
   }
-}
+};
 
 const getBrandDisplayName = (brandName: string) => {
-  const brand = brands.value.find(b => b.brand_name === brandName)
-  return brand ? brand.showed_brand_name : brandName
-}
+  const brand = brands.value.find((b) => b.brand_name === brandName);
+  return brand ? brand.showed_brand_name : brandName;
+};
 
 const getBrandColor = (brandName: string) => {
-  const colors = ['#409EFF', '#67C23A', '#E6A23C', '#F56C6C', '#909399', '#B37FEB', '#FF85C0']
-  const index = brands.value.findIndex(b => b.brand_name === brandName)
-  return colors[index % colors.length]
-}
+  const colors = [
+    "#409EFF",
+    "#67C23A",
+    "#E6A23C",
+    "#F56C6C",
+    "#909399",
+    "#B37FEB",
+    "#FF85C0",
+  ];
+  const index = brands.value.findIndex((b) => b.brand_name === brandName);
+  return colors[index % colors.length];
+};
 
-const handleSortChange = ({ prop, order }: { prop: string; order: 'ascending' | 'descending' | null }) => {
-  sortConfig.value = { prop, order }
-}
+const handleSortChange = ({
+  prop,
+  order,
+}: {
+  prop: string;
+  order: "ascending" | "descending" | null;
+}) => {
+  sortConfig.value = { prop, order };
+};
 
 const handleSearch = () => {
   // Search is handled by the computed property, but we can add debouncing here if needed
-  console.log('Searching for:', searchQuery.value)
-}
+  console.log("Searching for:", searchQuery.value);
+};
 
 const formatNumber = (num: number) => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat("en-US", {
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(num)
-}
+    maximumFractionDigits: 0,
+  }).format(num);
+};
 
 onMounted(() => {
-  fetchBrands()
-  fetchProducts()
-})
+  fetchBrands();
+  fetchProducts();
+});
 </script>
 
 <style scoped>

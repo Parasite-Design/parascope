@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="user-management-container">
     <div class="page-header">
@@ -10,7 +11,7 @@
         <div class="card-header">
           <span>My Account</span>
           <el-tag :type="authStore.isAdmin ? 'success' : 'info'" size="small">
-            {{ authStore.isAdmin ? 'Administrator' : 'User' }}
+            {{ authStore.isAdmin ? "Administrator" : "User" }}
           </el-tag>
         </div>
       </template>
@@ -22,15 +23,21 @@
         </div>
         <div v-if="userRepresentative" class="info-row">
           <span class="info-label">Representative:</span>
-          <span class="info-value">{{ userRepresentative.key }} - {{ userRepresentative.name }}</span>
+          <span class="info-value"
+            >{{ userRepresentative.key }} - {{ userRepresentative.name }}</span
+          >
         </div>
         <div class="info-row">
           <span class="info-label">Account Created:</span>
-          <span class="info-value">{{ formatDate(authStore.user?.created_at) }}</span>
+          <span class="info-value">{{
+            formatDate(authStore.user?.created_at)
+          }}</span>
         </div>
         <div class="info-row">
           <span class="info-label">Last Updated:</span>
-          <span class="info-value">{{ formatDate(authStore.user?.updated_at) }}</span>
+          <span class="info-value">{{
+            formatDate(authStore.user?.updated_at)
+          }}</span>
         </div>
       </div>
     </el-card>
@@ -79,9 +86,9 @@
           </el-form-item>
 
           <div class="form-actions">
-            <el-button 
-              type="primary" 
-              @click="submitChangePassword" 
+            <el-button
+              type="primary"
+              @click="submitChangePassword"
               :loading="changingPassword"
               icon="Key"
             >
@@ -106,10 +113,11 @@
       <div class="danger-zone">
         <p class="warning-text">
           <el-icon><Warning /></el-icon>
-          Warning: This action is permanent and cannot be undone. All your data will be lost.
+          Warning: This action is permanent and cannot be undone. All your data
+          will be lost.
         </p>
-        <el-button 
-          type="danger" 
+        <el-button
+          type="danger"
           @click="confirmDeleteOwnAccount"
           icon="Delete"
           plain
@@ -122,19 +130,15 @@
     <!-- Admin Management Section -->
     <template v-if="authStore.isAdmin">
       <el-divider />
-      
+
       <div class="admin-section-header">
         <h2>Administrator Panel</h2>
         <div class="admin-actions">
-          <el-button 
-            type="primary" 
-            @click="showCreateUserDialog" 
-            icon="Plus"
-          >
+          <el-button type="primary" @click="showCreateUserDialog" icon="Plus">
             Create New User
           </el-button>
-          <el-button 
-            @click="refreshUsers" 
+          <el-button
+            @click="refreshUsers"
             :loading="loadingUsers"
             icon="Refresh"
           >
@@ -153,18 +157,23 @@
         </template>
 
         <div class="table-container">
-          <el-table 
-            :data="users" 
+          <el-table
+            :data="users"
             v-loading="loadingUsers"
             :row-key="(row: { id: any }) => row.id"
-            style="width: 100%;"
+            style="width: 100%"
           >
-            <el-table-column prop="email" label="Email" min-width="250" sortable />
-            
+            <el-table-column
+              prop="email"
+              label="Email"
+              min-width="250"
+              sortable
+            />
+
             <el-table-column prop="is_admin" label="Role" width="120">
               <template #default="{ row }">
                 <el-tag :type="row.is_admin ? 'success' : 'info'" size="small">
-                  {{ row.is_admin ? 'Admin' : 'User' }}
+                  {{ row.is_admin ? "Admin" : "User" }}
                 </el-tag>
               </template>
             </el-table-column>
@@ -178,13 +187,23 @@
               </template>
             </el-table-column>
 
-            <el-table-column prop="created_at" label="Created" width="180" sortable>
+            <el-table-column
+              prop="created_at"
+              label="Created"
+              width="180"
+              sortable
+            >
               <template #default="{ row }">
                 {{ formatDate(row.created_at) }}
               </template>
             </el-table-column>
 
-            <el-table-column prop="updated_at" label="Updated" width="180" sortable>
+            <el-table-column
+              prop="updated_at"
+              label="Updated"
+              width="180"
+              sortable
+            >
               <template #default="{ row }">
                 {{ formatDate(row.updated_at) }}
               </template>
@@ -193,30 +212,26 @@
             <el-table-column label="Actions" width="250" fixed="right">
               <template #default="{ row }">
                 <div class="action-buttons">
-                  <el-button 
-                    type="warning" 
-                    @click="showResetPasswordDialog(row)" 
+                  <el-button
+                    type="warning"
+                    @click="showResetPasswordDialog(row)"
                     size="small"
                     icon="Key"
                     title="Reset Password"
                   >
                     Reset PW
                   </el-button>
-                  <el-button 
+                  <el-button
                     v-if="row.id !== authStore.user?.id"
-                    type="danger" 
-                    @click="confirmDeleteUser(row)" 
+                    type="danger"
+                    @click="confirmDeleteUser(row)"
                     size="small"
                     icon="Delete"
                     title="Delete User"
                   >
                     Delete
                   </el-button>
-                  <el-tag 
-                    v-else 
-                    type="info" 
-                    size="small"
-                  >
+                  <el-tag v-else type="info" size="small">
                     Current User
                   </el-tag>
                 </div>
@@ -279,7 +294,7 @@
               v-model="createUserForm.representative_id"
               placeholder="Select representative (optional)"
               filterable
-              style="width: 100%;"
+              style="width: 100%"
               clearable
             >
               <el-option
@@ -288,25 +303,25 @@
                 :label="`${rep.code} - ${rep.key} - ${rep.name || 'No name'}`"
                 :value="rep.code"
               />
-              <el-option
-                label="No representative"
-                :value="null"
-              />
+              <el-option label="No representative" :value="null" />
             </el-select>
             <div class="form-help">
               Assigning a representative links this user to a specific rep
             </div>
           </el-form-item>
         </el-form>
-        
+
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="handleCreateUserDialogClose" :disabled="creatingUser">
+            <el-button
+              @click="handleCreateUserDialogClose"
+              :disabled="creatingUser"
+            >
               Cancel
             </el-button>
-            <el-button 
-              type="primary" 
-              @click="submitCreateUser" 
+            <el-button
+              type="primary"
+              @click="submitCreateUser"
               :loading="creatingUser"
             >
               Create User
@@ -347,15 +362,18 @@
             />
           </el-form-item>
         </el-form>
-        
+
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="handleResetPasswordDialogClose" :disabled="resettingPassword">
+            <el-button
+              @click="handleResetPasswordDialogClose"
+              :disabled="resettingPassword"
+            >
               Cancel
             </el-button>
-            <el-button 
-              type="primary" 
-              @click="submitResetPassword" 
+            <el-button
+              type="primary"
+              @click="submitResetPassword"
               :loading="resettingPassword"
             >
               Reset Password
@@ -368,442 +386,476 @@
 </template>
 
 <script setup lang="ts">
-import { Warning } from '@element-plus/icons-vue'
-import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
-import { computed, onMounted, reactive, ref } from 'vue'
-import { api, useAuthStore } from '../stores/auth'
+import { Warning } from "@element-plus/icons-vue";
+import {
+  ElMessage,
+  ElMessageBox,
+  type FormInstance,
+  type FormRules,
+} from "element-plus";
+import { computed, onMounted, reactive, ref } from "vue";
+import { api, useAuthStore } from "../stores/auth";
 
 interface User {
-  id: string
-  email: string
-  is_admin: boolean
-  representative_id: string | null
-  created_at: string
-  updated_at: string
+  id: string;
+  email: string;
+  is_admin: boolean;
+  representative_id: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 interface Representative {
-  id: string
-  code: number
-  key: string
-  name: string
-  objectives: Record<string, any>
+  id: string;
+  code: number;
+  key: string;
+  name: string;
+  objectives: Record<string, any>;
 }
 
 interface ChangePasswordForm {
-  current_password: string
-  new_password: string
-  confirm_password: string
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
 }
 
 interface CreateUserForm {
-  email: string
-  password: string
-  confirmPassword: string
-  is_admin: boolean
-  representative_id: number | null
+  email: string;
+  password: string;
+  confirmPassword: string;
+  is_admin: boolean;
+  representative_id: number | null;
 }
 
 interface ResetPasswordForm {
-  new_password: string
-  confirm_password: string
+  new_password: string;
+  confirm_password: string;
 }
 
-const authStore = useAuthStore()
+const authStore = useAuthStore();
 
 // State
-const users = ref<User[]>([])
-const representatives = ref<Representative[]>([])
-const loadingUsers = ref(false)
-const changingPassword = ref(false)
-const creatingUser = ref(false)
-const resettingPassword = ref(false)
+const users = ref<User[]>([]);
+const representatives = ref<Representative[]>([]);
+const loadingUsers = ref(false);
+const changingPassword = ref(false);
+const creatingUser = ref(false);
+const resettingPassword = ref(false);
 
 // Dialog visibility
-const createUserDialogVisible = ref(false)
-const resetPasswordDialogVisible = ref(false)
+const createUserDialogVisible = ref(false);
+const resetPasswordDialogVisible = ref(false);
 
 // Current user for reset password
-const resetPasswordUser = ref<User | null>(null)
+const resetPasswordUser = ref<User | null>(null);
 
 // Forms
-const changePasswordFormRef = ref<FormInstance>()
+const changePasswordFormRef = ref<FormInstance>();
 const changePasswordForm = reactive<ChangePasswordForm>({
-  current_password: '',
-  new_password: '',
-  confirm_password: ''
-})
+  current_password: "",
+  new_password: "",
+  confirm_password: "",
+});
 
-const createUserFormRef = ref<FormInstance>()
+const createUserFormRef = ref<FormInstance>();
 const createUserForm = reactive<CreateUserForm>({
-  email: '',
-  password: '',
-  confirmPassword: '',
+  email: "",
+  password: "",
+  confirmPassword: "",
   is_admin: false,
-  representative_id: null
-})
+  representative_id: null,
+});
 
-const resetPasswordFormRef = ref<FormInstance>()
+const resetPasswordFormRef = ref<FormInstance>();
 const resetPasswordForm = reactive<ResetPasswordForm>({
-  new_password: '',
-  confirm_password: ''
-})
+  new_password: "",
+  confirm_password: "",
+});
 
 // Validation rules
 const changePasswordRules: FormRules = {
   current_password: [
-    { required: true, message: 'Please enter current password', trigger: 'blur' },
-    { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' }
+    {
+      required: true,
+      message: "Please enter current password",
+      trigger: "blur",
+    },
+    {
+      min: 6,
+      message: "Password must be at least 6 characters",
+      trigger: "blur",
+    },
   ],
   new_password: [
-    { required: true, message: 'Please enter new password', trigger: 'blur' },
-    { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' },
-    { validator: validateNewPassword, trigger: 'blur' }
+    { required: true, message: "Please enter new password", trigger: "blur" },
+    {
+      min: 6,
+      message: "Password must be at least 6 characters",
+      trigger: "blur",
+    },
+    { validator: validateNewPassword, trigger: "blur" },
   ],
   confirm_password: [
-    { required: true, message: 'Please confirm new password', trigger: 'blur' },
-    { validator: validateConfirmPassword, trigger: 'blur' }
-  ]
-}
+    { required: true, message: "Please confirm new password", trigger: "blur" },
+    { validator: validateConfirmPassword, trigger: "blur" },
+  ],
+};
 
 const createUserRules: FormRules = {
   email: [
-    { required: true, message: 'Please enter email address', trigger: 'blur' },
-    { type: 'email', message: 'Please enter valid email', trigger: 'blur' }
+    { required: true, message: "Please enter email address", trigger: "blur" },
+    { type: "email", message: "Please enter valid email", trigger: "blur" },
   ],
   password: [
-    { required: true, message: 'Please enter password', trigger: 'blur' },
-    { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' }
+    { required: true, message: "Please enter password", trigger: "blur" },
+    {
+      min: 6,
+      message: "Password must be at least 6 characters",
+      trigger: "blur",
+    },
   ],
   confirmPassword: [
-    { required: true, message: 'Please confirm password', trigger: 'blur' },
-    { validator: validateCreateUserConfirmPassword, trigger: 'blur' }
+    { required: true, message: "Please confirm password", trigger: "blur" },
+    { validator: validateCreateUserConfirmPassword, trigger: "blur" },
   ],
   representative_id: [
-    { validator: validateRepresentativeId, trigger: 'change' }
-  ]
-}
+    { validator: validateRepresentativeId, trigger: "change" },
+  ],
+};
 
 const resetPasswordRules: FormRules = {
   new_password: [
-    { required: true, message: 'Please enter new password', trigger: 'blur' },
-    { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' }
+    { required: true, message: "Please enter new password", trigger: "blur" },
+    {
+      min: 6,
+      message: "Password must be at least 6 characters",
+      trigger: "blur",
+    },
   ],
   confirm_password: [
-    { required: true, message: 'Please confirm new password', trigger: 'blur' },
-    { validator: validateResetPasswordConfirm, trigger: 'blur' }
-  ]
-}
+    { required: true, message: "Please confirm new password", trigger: "blur" },
+    { validator: validateResetPasswordConfirm, trigger: "blur" },
+  ],
+};
 
 // Validators
 function validateNewPassword(rule: any, value: string, callback: Function) {
   if (value === changePasswordForm.current_password) {
-    callback(new Error('New password must be different from current password'))
+    callback(new Error("New password must be different from current password"));
   } else {
-    callback()
+    callback();
   }
 }
 
 function validateConfirmPassword(rule: any, value: string, callback: Function) {
   if (value !== changePasswordForm.new_password) {
-    callback(new Error('Passwords do not match'))
+    callback(new Error("Passwords do not match"));
   } else {
-    callback()
+    callback();
   }
 }
 
-function validateCreateUserConfirmPassword(rule: any, value: string, callback: Function) {
+function validateCreateUserConfirmPassword(
+  rule: any,
+  value: string,
+  callback: Function,
+) {
   if (value !== createUserForm.password) {
-    callback(new Error('Passwords do not match'))
+    callback(new Error("Passwords do not match"));
   } else {
-    callback()
+    callback();
   }
 }
 
-function validateResetPasswordConfirm(rule: any, value: string, callback: Function) {
+function validateResetPasswordConfirm(
+  rule: any,
+  value: string,
+  callback: Function,
+) {
   if (value !== resetPasswordForm.new_password) {
-    callback(new Error('Passwords do not match'))
+    callback(new Error("Passwords do not match"));
   } else {
-    callback()
+    callback();
   }
 }
 
-function validateRepresentativeId(rule: any, value: string | null, callback: Function) {
+function validateRepresentativeId(
+  rule: any,
+  value: string | null,
+  callback: Function,
+) {
   // Representative is optional, so always valid
-  callback()
+  callback();
 }
 
 // Computed properties
 const userRepresentative = computed(() => {
-  if (!authStore.user?.representative_id) return null
-  return representatives.value.find(rep => rep.id === authStore.user?.representative_id)
-})
+  if (!authStore.user?.representative_id) return null;
+  return representatives.value.find(
+    (rep) => rep.id === authStore.user?.representative_id,
+  );
+});
 
 const availableRepresentatives = computed(() => {
   // Filter out representatives that already have a user assigned
   const assignedRepIds = users.value
-    .map(user => user.representative_id)
-    .filter(id => id !== null) as string[]
-  
-  return representatives.value.filter(rep => !assignedRepIds.includes(rep.id))
-})
+    .map((user) => user.representative_id)
+    .filter((id) => id !== null) as string[];
+
+  return representatives.value.filter(
+    (rep) => !assignedRepIds.includes(rep.id),
+  );
+});
 
 // Methods
 const fetchUsers = async () => {
-  if (!authStore.isAdmin) return
-  
-  loadingUsers.value = true
+  if (!authStore.isAdmin) return;
+
+  loadingUsers.value = true;
   try {
-    const response = await api.get('/api/v1/users')
-    users.value = response.data
+    const response = await api.get("/api/v1/users");
+    users.value = response.data;
   } catch (error) {
-    console.error('Failed to fetch users:', error)
-    ElMessage.error('Failed to load users')
+    console.error("Failed to fetch users:", error);
+    ElMessage.error("Failed to load users");
   } finally {
-    loadingUsers.value = false
+    loadingUsers.value = false;
   }
-}
+};
 
 const fetchRepresentatives = async () => {
   try {
-    const response = await api.get('/api/v1/rep/all')
-    representatives.value = response.data
+    const response = await api.get("/api/v1/rep/all");
+    representatives.value = response.data;
   } catch (error) {
-    console.error('Failed to fetch representatives:', error)
-    ElMessage.error('Failed to load representatives')
+    console.error("Failed to fetch representatives:", error);
+    ElMessage.error("Failed to load representatives");
   }
-}
+};
 
 const refreshUsers = async () => {
   if (authStore.isAdmin) {
-    await Promise.all([fetchUsers(), fetchRepresentatives()])
+    await Promise.all([fetchUsers(), fetchRepresentatives()]);
   }
-}
+};
 
 const getRepresentativeName = (representativeId: string | null) => {
-  if (!representativeId) return ''
-  const rep = representatives.value.find(r => r.id === representativeId)
-  return rep ? `${rep.key} - ${rep.name}` : ''
-}
+  if (!representativeId) return "";
+  const rep = representatives.value.find((r) => r.id === representativeId);
+  return rep ? `${rep.key} - ${rep.name}` : "";
+};
 
 const formatDate = (dateString: string | undefined) => {
-  if (!dateString) return 'N/A'
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
+  if (!dateString) return "N/A";
+  return new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 
 // Change Password
 const submitChangePassword = async () => {
-  if (!changePasswordFormRef.value) return
-  
+  if (!changePasswordFormRef.value) return;
+
   await changePasswordFormRef.value.validate(async (valid) => {
-    if (!valid) return
-    
-    changingPassword.value = true
+    if (!valid) return;
+
+    changingPassword.value = true;
     try {
-      await api.post(
-        '/api/v1/change-password',
-        {
-          current_password: changePasswordForm.current_password,
-          new_password: changePasswordForm.new_password
-        }
-      )
-      
-      ElMessage.success('Password changed successfully')
-      resetChangePasswordForm()
+      await api.post("/api/v1/change-password", {
+        current_password: changePasswordForm.current_password,
+        new_password: changePasswordForm.new_password,
+      });
+
+      ElMessage.success("Password changed successfully");
+      resetChangePasswordForm();
     } catch (error: any) {
-      console.error('Failed to change password:', error)
-      const errorMsg = error.response?.data?.detail || 'Failed to change password'
-      ElMessage.error(errorMsg)
+      console.error("Failed to change password:", error);
+      const errorMsg =
+        error.response?.data?.detail || "Failed to change password";
+      ElMessage.error(errorMsg);
     } finally {
-      changingPassword.value = false
+      changingPassword.value = false;
     }
-  })
-}
+  });
+};
 
 const resetChangePasswordForm = () => {
-  changePasswordForm.current_password = ''
-  changePasswordForm.new_password = ''
-  changePasswordForm.confirm_password = ''
-  
+  changePasswordForm.current_password = "";
+  changePasswordForm.new_password = "";
+  changePasswordForm.confirm_password = "";
+
   if (changePasswordFormRef.value) {
-    changePasswordFormRef.value.clearValidate()
+    changePasswordFormRef.value.clearValidate();
   }
-}
+};
 
 // Create User (Admin only)
 const showCreateUserDialog = () => {
-  createUserForm.email = ''
-  createUserForm.password = ''
-  createUserForm.confirmPassword = ''
-  createUserForm.is_admin = false
-  createUserForm.representative_id = null
-  
+  createUserForm.email = "";
+  createUserForm.password = "";
+  createUserForm.confirmPassword = "";
+  createUserForm.is_admin = false;
+  createUserForm.representative_id = null;
+
   if (createUserFormRef.value) {
-    createUserFormRef.value.clearValidate()
+    createUserFormRef.value.clearValidate();
   }
-  
-  createUserDialogVisible.value = true
-}
+
+  createUserDialogVisible.value = true;
+};
 
 const submitCreateUser = async () => {
-  if (!createUserFormRef.value) return
-  
+  if (!createUserFormRef.value) return;
+
   await createUserFormRef.value.validate(async (valid) => {
-    if (!valid) return
-    
-    creatingUser.value = true
+    if (!valid) return;
+
+    creatingUser.value = true;
     try {
-      await api.post(
-        '/api/v1/register',
-        {
-          email: createUserForm.email,
-          password: createUserForm.password,
-          is_admin: createUserForm.is_admin,
-          representative_id: createUserForm.representative_id
-        }
-      )
-      
-      ElMessage.success('User created successfully')
-      await fetchUsers()
-      handleCreateUserDialogClose()
+      await api.post("/api/v1/register", {
+        email: createUserForm.email,
+        password: createUserForm.password,
+        is_admin: createUserForm.is_admin,
+        representative_id: createUserForm.representative_id,
+      });
+
+      ElMessage.success("User created successfully");
+      await fetchUsers();
+      handleCreateUserDialogClose();
     } catch (error: any) {
-      console.error('Failed to create user:', error)
-      const errorMsg = error.response?.data?.detail || 'Failed to create user'
-      ElMessage.error(errorMsg)
+      console.error("Failed to create user:", error);
+      const errorMsg = error.response?.data?.detail || "Failed to create user";
+      ElMessage.error(errorMsg);
     } finally {
-      creatingUser.value = false
+      creatingUser.value = false;
     }
-  })
-}
+  });
+};
 
 const handleCreateUserDialogClose = () => {
-  createUserDialogVisible.value = false
-}
+  createUserDialogVisible.value = false;
+};
 
 // Reset Password (Admin only)
 const showResetPasswordDialog = (user: User) => {
-  resetPasswordUser.value = user
-  resetPasswordForm.new_password = ''
-  resetPasswordForm.confirm_password = ''
-  
+  resetPasswordUser.value = user;
+  resetPasswordForm.new_password = "";
+  resetPasswordForm.confirm_password = "";
+
   if (resetPasswordFormRef.value) {
-    resetPasswordFormRef.value.clearValidate()
+    resetPasswordFormRef.value.clearValidate();
   }
-  
-  resetPasswordDialogVisible.value = true
-}
+
+  resetPasswordDialogVisible.value = true;
+};
 
 const submitResetPassword = async () => {
-  if (!resetPasswordFormRef.value || !resetPasswordUser.value) return
-  
+  if (!resetPasswordFormRef.value || !resetPasswordUser.value) return;
+
   await resetPasswordFormRef.value.validate(async (valid) => {
-    if (!valid) return
-    
-    resettingPassword.value = true
+    if (!valid) return;
+
+    resettingPassword.value = true;
     try {
-      await api.post(
-        '/api/v1/reset-password',
-        {
-          user_id: resetPasswordUser.value?.id,
-          new_password: resetPasswordForm.new_password
-        }
-      )
-      
-      ElMessage.success('Password reset successfully')
-      handleResetPasswordDialogClose()
+      await api.post("/api/v1/reset-password", {
+        user_id: resetPasswordUser.value?.id,
+        new_password: resetPasswordForm.new_password,
+      });
+
+      ElMessage.success("Password reset successfully");
+      handleResetPasswordDialogClose();
     } catch (error: any) {
-      console.error('Failed to reset password:', error)
-      const errorMsg = error.response?.data?.detail || 'Failed to reset password'
-      ElMessage.error(errorMsg)
+      console.error("Failed to reset password:", error);
+      const errorMsg =
+        error.response?.data?.detail || "Failed to reset password";
+      ElMessage.error(errorMsg);
     } finally {
-      resettingPassword.value = false
+      resettingPassword.value = false;
     }
-  })
-}
+  });
+};
 
 const handleResetPasswordDialogClose = () => {
-  resetPasswordDialogVisible.value = false
-  resetPasswordUser.value = null
-}
+  resetPasswordDialogVisible.value = false;
+  resetPasswordUser.value = null;
+};
 
 // Delete Account
 const confirmDeleteOwnAccount = async () => {
   try {
     await ElMessageBox.confirm(
-      'Are you sure you want to delete your account? This action is permanent and cannot be undone. All your data will be lost.',
-      'Delete Account',
+      "Are you sure you want to delete your account? This action is permanent and cannot be undone. All your data will be lost.",
+      "Delete Account",
       {
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-        confirmButtonClass: 'el-button--danger'
-      }
-    )
-    
-    await deleteAccount()
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
+        type: "warning",
+        confirmButtonClass: "el-button--danger",
+      },
+    );
+
+    await deleteAccount();
   } catch (error) {
     // User cancelled
   }
-}
+};
 
 const confirmDeleteUser = async (user: User) => {
   try {
     await ElMessageBox.confirm(
       `Are you sure you want to delete user "${user.email}"? This action is permanent and cannot be undone.`,
-      'Delete User',
+      "Delete User",
       {
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-        confirmButtonClass: 'el-button--danger'
-      }
-    )
-    
-    await deleteAccount(user.id)
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
+        type: "warning",
+        confirmButtonClass: "el-button--danger",
+      },
+    );
+
+    await deleteAccount(user.id);
   } catch (error) {
     // User cancelled
   }
-}
+};
 
 const deleteAccount = async (userId?: string) => {
   try {
-    const params = userId ? { user_id: userId } : {}
-    
-    await api.delete('/api/v1/delete-account', {
-      params
-    })
-    
+    const params = userId ? { user_id: userId } : {};
+
+    await api.delete("/api/v1/delete-account", {
+      params,
+    });
+
     if (userId) {
-      ElMessage.success('User deleted successfully')
-      await fetchUsers()
+      ElMessage.success("User deleted successfully");
+      await fetchUsers();
     } else {
-      ElMessage.success('Your account has been deleted')
+      ElMessage.success("Your account has been deleted");
       // Redirect to logout or login page
       // In a real app, you'd want to log the user out and redirect
       setTimeout(() => {
-        window.location.href = '/login'
-      }, 2000)
+        window.location.href = "/login";
+      }, 2000);
     }
   } catch (error: any) {
-    console.error('Failed to delete account:', error)
-    const errorMsg = error.response?.data?.detail || 'Failed to delete account'
-    ElMessage.error(errorMsg)
+    console.error("Failed to delete account:", error);
+    const errorMsg = error.response?.data?.detail || "Failed to delete account";
+    ElMessage.error(errorMsg);
   }
-}
+};
 
 // Lifecycle
 onMounted(async () => {
-  await fetchRepresentatives()
+  await fetchRepresentatives();
   if (authStore.isAdmin) {
-    await fetchUsers()
+    await fetchUsers();
   }
-})
+});
 </script>
 
 <style scoped>

@@ -142,11 +142,10 @@ const formatDate = (dateString: string) => {
 
 const selectedBrandName = computed(() => {
   const brand = settingsStore.brands.find(
-    (b) => b.brand_name === settingsStore.selectedBrand
+    (b) => b.brand_name === settingsStore.selectedBrand,
   );
   return brand ? brand.showed_brand_name : "";
 });
-
 </script>
 
 <style scoped>
