@@ -267,11 +267,7 @@ const availableBrands = computed(() => {
 // Check if user is admin
 const checkAdminStatus = async () => {
   try {
-    const response = await api.get('http://localhost:8000/api/v1/is-admin', {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      }
-    })
+    const response = await api.get('/api/v1/is-admin')
     
     if (!response.data.is_admin) {
       ElMessage.error('Access denied: Admin privileges required')
@@ -288,11 +284,7 @@ const checkAdminStatus = async () => {
 const fetchRepresentatives = async () => {
   loading.value = true
   try {
-    const response = await api.get('http://localhost:8000/api/v1/rep/all', {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      }
-    })
+    const response = await api.get('/api/v1/rep/all')
     // Ensure objectives have proper structure
     representatives.value = response.data.map((rep: any) => ({
       ...rep,
@@ -308,7 +300,7 @@ const fetchRepresentatives = async () => {
 
 const fetchBrands = async () => {
   try {
-    const response = await api.get('http://localhost:8000/api/v1/settings/brand')
+    const response = await api.get('/api/v1/settings/brand')
     brands.value = response.data
   } catch (error) {
     console.error('Failed to fetch brands:', error)
@@ -375,11 +367,7 @@ const confirmDeleteObjective = async (rep: Representative, brandName: string, ty
 
 const deleteObjective = async (repId: string, brandName: string, type: 'salesPerCustomer' | 'activeCustomers') => {
   try {
-    await api.delete('http://localhost:8000/api/v1/settings/objective', {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-        'Content-Type': 'application/json'
-      },
+    await api.delete('/api/v1/settings/objective', {
       data: {
         rep_id: repId,
         brand_name: brandName,
@@ -460,14 +448,8 @@ const submitForm = async () => {
       }
       
       await api.post(
-        'http://localhost:8000/api/v1/settings/objective',
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${authStore.token}`,
-            'Content-Type': 'application/json'
-          }
-        }
+        '/api/v1/settings/objective',
+        payload
       )
       
       ElMessage.success(isEditing.value ? 'Objective updated successfully' : 'Objective set successfully')

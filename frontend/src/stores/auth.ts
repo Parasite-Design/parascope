@@ -5,7 +5,7 @@ import { useSettingsStore } from "../stores/settings";
 
 // Create axios instance with base configuration
 export const api = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: import.meta.env.PARASCOPE_API_BASE_URL || 'http://localhost:8000',
 })
 
 // Flag to track if interceptors have been set up
@@ -161,11 +161,7 @@ export const useAuthStore = defineStore('auth', () => {
       const currentToken = localStorage.getItem('token');
       if (currentToken) {
         console.log('Calling logout API endpoint');
-        await api.post('/api/v1/logout', {}, {
-          headers: {
-            Authorization: `Bearer ${currentToken}`
-          }
-        })
+        await api.post('/api/v1/logout')
         console.log('Logout API call successful');
       }
     } catch (error) {
@@ -207,11 +203,7 @@ export const useAuthStore = defineStore('auth', () => {
   // New method to check admin status from server
   const checkAdminStatus = async (): Promise<boolean> => {
     try {
-      const response = await api.get('/api/v1/is-admin', {
-        headers: {
-          Authorization: `Bearer ${token.value}`
-        }
-      })
+      const response = await api.get('/api/v1/is-admin')
       
       const { is_admin } = response.data
       

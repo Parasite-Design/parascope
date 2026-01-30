@@ -345,25 +345,13 @@ const submitForm = async () => {
       
       if (props.mode === 'create') {
         await api.post(
-          'http://localhost:8000/api/v1/prospect/',
-          payload,
-          {
-            headers: {
-              Authorization: `Bearer ${authStore.token}`,
-              'Content-Type': 'application/json'
-            }
-          }
+          '/api/v1/prospect/',
+          payload
         )
       } else {
         await api.put(
-          `http://localhost:8000/api/v1/prospect/${form.id}`,
-          payload,
-          {
-            headers: {
-              Authorization: `Bearer ${authStore.token}`,
-              'Content-Type': 'application/json'
-            }
-          }
+          `/api/v1/prospect/${form.id}`,
+          payload
         )
       }
       

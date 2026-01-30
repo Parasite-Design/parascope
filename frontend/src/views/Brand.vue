@@ -149,11 +149,7 @@ const formRules: FormRules = {
 // Check if user is admin
 const checkAdminStatus = async () => {
   try {
-    const response = await api.get('http://localhost:8000/api/v1/is-admin', {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      }
-    })
+    const response = await api.get('/api/v1/is-admin')
     
     if (!response.data.is_admin) {
       ElMessage.error('Access denied: Admin privileges required')
@@ -171,7 +167,7 @@ const checkAdminStatus = async () => {
 const fetchBrands = async () => {
   loading.value = true
   try {
-    const response = await api.get('http://localhost:8000/api/v1/settings/brand')
+    const response = await api.get('/api/v1/settings/brand')
     brands.value = response.data
     filteredBrands.value = response.data
   } catch (error) {
@@ -217,16 +213,10 @@ const submitForm = async () => {
     try {
       if (formMode.value === 'create') {
         await api.post(
-          'http://localhost:8000/api/v1/settings/brand',
+          '/api/v1/settings/brand',
           {
             brand_name: formData.brand_name,
             showed_brand_name: formData.showed_brand_name
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${authStore.token}`,
-              'Content-Type': 'application/json'
-            }
           }
         )
         ElMessage.success('Brand created successfully')
@@ -262,12 +252,7 @@ const deleteBrand = async (brand: Brand) => {
     )
     
     await api.delete(
-      `http://localhost:8000/api/v1/settings/brand/${brand.brand_name}`,
-      {
-        headers: {
-          Authorization: `Bearer ${authStore.token}`
-        }
-      }
+      `/api/v1/settings/brand/${brand.brand_name}`
     )
     
     ElMessage.success('Brand deleted successfully')

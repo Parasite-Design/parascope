@@ -320,13 +320,9 @@ const fetchCustomers = async () => {
     const period2Start = new Date(period1StartDate.getFullYear() - 1, period1StartDate.getMonth(), period1StartDate.getDate()).toISOString().split('T')[0]
     const period2End = new Date(period1EndDate.getFullYear() - 1, period1EndDate.getMonth(), period1EndDate.getDate()).toISOString().split('T')[0]
 
-    const url = `http://localhost:8000/api/v1/customers/?period1_start=${period1Start}&period1_end=${period1End}&period2_start=${period2Start}&period2_end=${period2End}`
+    const url = `/api/v1/customers/?period1_start=${period1Start}&period1_end=${period1End}&period2_start=${period2Start}&period2_end=${period2End}`
 
-    const response = await api.get(url, {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      }
-    })
+    const response = await api.get(url)
     
     allCustomers.value = response.data
     applyFilters()

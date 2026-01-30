@@ -352,13 +352,9 @@ const fetchCustomers = async () => {
     const period2End = new Date(period1EndDate.getFullYear() - 1, period1EndDate.getMonth(), period1EndDate.getDate()).toISOString().split('T')[0]
   
 
-    const url = `http://localhost:8000/api/v1/customers/?period1_start=${period1Start}&period1_end=${period1End}&period2_start=${period2Start}&period2_end=${period2End}`
+    const url = `/api/v1/customers/?period1_start=${period1Start}&period1_end=${period1End}&period2_start=${period2Start}&period2_end=${period2End}`
 
-    const response = await api.get(url, {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      }
-    })
+    const response = await api.get(url)
     
     allCustomers.value = response.data
     applyFilters()
@@ -473,14 +469,8 @@ const toggleFavorite = async (customer: Customer) => {
   try {
     const updatedCustomer = { favorite: !customer.favorite }
     await api.put(
-      `http://localhost:8000/api/v1/customers/${customer._id}`,
-      updatedCustomer,
-      {
-        headers: {
-          Authorization: `Bearer ${authStore.token}`,
-          'Content-Type': 'application/json'
-        }
-      }
+      `/api/v1/customers/${customer._id}`,
+      updatedCustomer
     )
     
     customer.favorite = !customer.favorite

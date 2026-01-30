@@ -403,7 +403,7 @@ const fetchAllData = async () => {
 // Fetch brands for display names
 const fetchBrands = async () => {
   try {
-    const response = await api.get('http://localhost:8000/api/v1/settings/brand')
+    const response = await api.get('/api/v1/settings/brand')
     brands.value = response.data
   } catch (error) {
     console.error('Failed to fetch brands:', error)
@@ -413,11 +413,7 @@ const fetchBrands = async () => {
 // Fetch representative data for objectives
 const fetchRepresentativeData = async () => {
   try {
-    const response = await api.get('http://localhost:8000/api/v1/rep/', {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      }
-    })
+    const response = await api.get('/api/v1/rep/')
     representativeData.value = response.data
   } catch (error) {
     console.error('Failed to fetch representative data:', error)
@@ -438,18 +434,12 @@ const fetchStatisticsData = async () => {
   
   try {
     // Fetch sales data
-    const salesResponse = await api.get('http://localhost:8000/api/v1/statistics/sales', {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      },
+    const salesResponse = await api.get('/api/v1/statistics/sales', {
       params
     })
     
     // Fetch customers data
-    const customersResponse = await api.get('http://localhost:8000/api/v1/statistics/customers', {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      },
+    const customersResponse = await api.get('/api/v1/statistics/customers', {
       params
     })
     

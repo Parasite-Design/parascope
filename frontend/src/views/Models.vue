@@ -386,13 +386,9 @@ const fetchModels = async () => {
     // Add include no sales filter
     params.append('include_no_sales', includeNoSales.value.toString())
     
-    const url = `http://localhost:8000/api/v1/models/?${params.toString()}`
+    const url = `/api/v1/models/?${params.toString()}`
     
-    const response = await api.get(url, {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      }
-    })
+    const response = await api.get(url)
     
     models.value = response.data
   } catch (error) {
@@ -405,11 +401,7 @@ const fetchModels = async () => {
 
 const fetchBrands = async () => {
   try {
-    const response = await api.get('http://localhost:8000/api/v1/settings/brand', {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      }
-    })
+    const response = await api.get('/api/v1/settings/brand')
     brands.value = response.data
   } catch (error) {
     console.error('Failed to fetch brands:', error)

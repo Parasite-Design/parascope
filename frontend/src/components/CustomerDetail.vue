@@ -412,12 +412,7 @@ const fetchCustomerDetails = async () => {
     const periodEnd = settingsStore.period.period_end
     
     const response = await api.get(
-      `http://localhost:8000/api/v1/customers/${props.customer._id}?month_interval=${chartPeriod.value}&period_start=${periodStart}&period_end=${periodEnd}`,
-      {
-        headers: {
-          Authorization: `Bearer ${authStore.token}`
-        }
-      }
+      `/api/v1/customers/${props.customer._id}?month_interval=${chartPeriod.value}&period_start=${periodStart}&period_end=${periodEnd}`
     )
     
     detailedCustomer.value = response.data
@@ -529,14 +524,7 @@ const editNotes = async () => {
     // Update notes via API
     const updatedCustomer = { note: value }
     await api.put(
-      `http://localhost:8000/api/v1/customers/${props.customer._id}`,
-      updatedCustomer,
-      {
-        headers: {
-          Authorization: `Bearer ${authStore.token}`,
-          'Content-Type': 'application/json'
-        }
-      }
+      `/api/v1/customers/${props.customer._id}`, updatedCustomer
     )
     
     // Update local state
@@ -563,14 +551,8 @@ const toggleFavorite = async () => {
   try {
     const updatedCustomer = { favorite: !props.customer.favorite }
     await api.put(
-      `http://localhost:8000/api/v1/customers/${props.customer._id}`,
-      updatedCustomer,
-      {
-        headers: {
-          Authorization: `Bearer ${authStore.token}`,
-          'Content-Type': 'application/json'
-        }
-      }
+      `/api/v1/customers/${props.customer._id}`,
+      updatedCustomer
     )
     
     // Update local state

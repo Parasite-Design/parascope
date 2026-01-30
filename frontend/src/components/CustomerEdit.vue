@@ -220,14 +220,8 @@ const submitForm = async () => {
       }
 
       await api.put(
-        `http://localhost:8000/api/v1/customers/${props.customer._id}`,
-        updateData,
-        {
-          headers: {
-            Authorization: `Bearer ${authStore.token}`,
-            'Content-Type': 'application/json'
-          }
-        }
+        `/api/v1/customers/${props.customer._id}`,
+        updateData
       )
       ElMessage.success('Customer updated successfully')
       

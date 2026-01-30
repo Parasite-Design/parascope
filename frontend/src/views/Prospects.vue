@@ -293,11 +293,7 @@ const getBrandDisplayName = (brandName: string): string => {
 
 const fetchAvailableBrands = async () => {
   try {
-    const response = await api.get('http://localhost:8000/api/v1/settings/brand', {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      }
-    })
+    const response = await api.get('/api/v1/settings/brand')
     availableBrands.value = response.data
   } catch (error) {
     console.error('Failed to fetch brands:', error)
@@ -349,13 +345,9 @@ const fetchProspects = async () => {
     params.append('page', currentPage.value.toString())
     params.append('limit', pageSize.value.toString())
     
-    const url = `http://localhost:8000/api/v1/prospect/?${params.toString()}`
+    const url = `/api/v1/prospect/?${params.toString()}`
     
-    const response = await api.get(url, {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      }
-    })
+    const response = await api.get(url)
     
     if (Array.isArray(response.data)) {
       prospects.value = response.data
@@ -401,16 +393,7 @@ const editProspect = (prospect: Prospect) => {
 const toggleFavorite = async (prospect: Prospect) => {
   try {
     const updatedProspect = { ...prospect, favorite: !prospect.favorite }
-    await api.put(
-      `http://localhost:8000/api/v1/prospect/${prospect.id}`,
-      updatedProspect,
-      {
-        headers: {
-          Authorization: `Bearer ${authStore.token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    )
+    await api.put(`/api/v1/prospect/${prospect.id}`, updatedProspect)
     
     prospect.favorite = !prospect.favorite
     ElMessage.success(prospect.favorite ? 'Added to favorites' : 'Removed from favorites')
@@ -434,12 +417,7 @@ const deleteProspect = async (prospect: Prospect) => {
     )
     
     await api.delete(
-      `http://localhost:8000/api/v1/prospect/${prospect.id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${authStore.token}`
-        }
-      }
+      `/api/v1/prospect/${prospect.id}`
     )
     
     ElMessage.success('Prospect deleted successfully')
@@ -463,11 +441,8 @@ const locateProspect = (prospect: Prospect) => {
 const exportToCSV = async () => {
   try {
     const response = await api.get(
-      'http://localhost:8000/api/v1/prospect/export/csv',
+      '/api/v1/prospect/export/csv',
       {
-        headers: {
-          Authorization: `Bearer ${authStore.token}`
-        },
         responseType: 'blob'
       }
     )

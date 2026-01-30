@@ -554,11 +554,7 @@ const fetchUsers = async () => {
   
   loadingUsers.value = true
   try {
-    const response = await api.get('http://localhost:8000/api/v1/users', {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      }
-    })
+    const response = await api.get('/api/v1/users')
     users.value = response.data
   } catch (error) {
     console.error('Failed to fetch users:', error)
@@ -570,11 +566,7 @@ const fetchUsers = async () => {
 
 const fetchRepresentatives = async () => {
   try {
-    const response = await api.get('http://localhost:8000/api/v1/rep/all', {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      }
-    })
+    const response = await api.get('/api/v1/rep/all')
     representatives.value = response.data
   } catch (error) {
     console.error('Failed to fetch representatives:', error)
@@ -615,16 +607,10 @@ const submitChangePassword = async () => {
     changingPassword.value = true
     try {
       await api.post(
-        'http://localhost:8000/api/v1/change-password',
+        '/api/v1/change-password',
         {
           current_password: changePasswordForm.current_password,
           new_password: changePasswordForm.new_password
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${authStore.token}`,
-            'Content-Type': 'application/json'
-          }
         }
       )
       
@@ -674,18 +660,12 @@ const submitCreateUser = async () => {
     creatingUser.value = true
     try {
       await api.post(
-        'http://localhost:8000/api/v1/register',
+        '/api/v1/register',
         {
           email: createUserForm.email,
           password: createUserForm.password,
           is_admin: createUserForm.is_admin,
           representative_id: createUserForm.representative_id
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${authStore.token}`,
-            'Content-Type': 'application/json'
-          }
         }
       )
       
@@ -728,16 +708,10 @@ const submitResetPassword = async () => {
     resettingPassword.value = true
     try {
       await api.post(
-        'http://localhost:8000/api/v1/reset-password',
+        '/api/v1/reset-password',
         {
           user_id: resetPasswordUser.value?.id,
           new_password: resetPasswordForm.new_password
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${authStore.token}`,
-            'Content-Type': 'application/json'
-          }
         }
       )
       
@@ -801,11 +775,7 @@ const deleteAccount = async (userId?: string) => {
   try {
     const params = userId ? { user_id: userId } : {}
     
-    await api.delete('http://localhost:8000/api/v1/delete-account', {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-        'Content-Type': 'application/json'
-      },
+    await api.delete('/api/v1/delete-account', {
       params
     })
     

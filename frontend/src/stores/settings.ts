@@ -24,11 +24,7 @@ export const useSettingsStore = defineStore('settings', () => {
   
   const fetchBrands = async () => {
     try {
-      const response = await api.get('http://localhost:8000/api/v1/settings/brand', {
-        headers: {
-          Authorization: `Bearer ${authStore.token}`
-        }
-      })
+      const response = await api.get('/api/v1/settings/brand')
       brands.value = response.data
     } catch (error) {
       console.error('Failed to fetch brands:', error)
@@ -42,11 +38,7 @@ export const useSettingsStore = defineStore('settings', () => {
         ? '/api/v1/dates/rolling-year' 
         : `/api/v1/dates/n/${periodType === 'fiscal' ? -1 : 0}`
       
-      const response = await api.get(`http://localhost:8000${endpoint}`, {
-        headers: {
-          Authorization: `Bearer ${authStore.token}`
-        }
-      })
+      const response = await api.get(`${endpoint}`)
       
       period.value = response.data
       selectedPeriodType.value = periodType
