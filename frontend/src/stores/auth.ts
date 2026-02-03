@@ -5,7 +5,7 @@ import { useSettingsStore } from "../stores/settings";
 
 // Create axios instance with base configuration
 export const api = axios.create({
-  baseURL: import.meta.env.PARASCOPE_API_BASE_URL || "http://localhost:8000",
+  baseURL: import.meta.env.VITE_IVISION_API_BASE_URL || "http://localhost:8000",
 });
 
 // Flag to track if interceptors have been set up
