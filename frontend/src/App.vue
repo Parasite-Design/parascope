@@ -62,12 +62,12 @@ body {
 .main-content {
   flex: 1;
   padding: 20px;
-  margin-left: 240px; /* Sidebar width */
-  transition: margin-left 0.3s ease;
+  padding-left: calc(20px + 240px);
+  transition: padding-left 0.3s ease;
 }
 
 .main-content.sidebar-collapsed {
-  margin-left: 64px; /* Collapsed sidebar width */
+  padding-left: calc(20px + 64px);
 }
 
 /* Custom scrollbar for the entire app */
